@@ -1,0 +1,1948 @@
+[00:00] Okay, yeah, thanks for joining me. I am still on the West Coast time, so he looks like I'm doing this at like 7am.
+[00:28] Yeah, but glad to talk to you about the cloud agent SDK.
+[00:36] So yeah, I think this is going to be like a rough agenda, but we're going to talk about what is the cloud
+[00:44] to agent SDK, why use it? There's some other agent frameworks, what is an agent? What is an agent framework?
+[00:52] How do you design an agent using the agent SDK or just a general?
+[00:58] And then I'm going to do some like live coding or cloud is going to do some live coding on probably typing an agent
+[01:04] and got some starter code, but yeah, the whole goal of this is like, we got two hours, we're going to be super collaborative, ask questions.
+[01:16] This is also going to be not like a super hand demo in the sense that like we're going to be like thinking through things live, you know, I'm not going to have all the answers right away
+[01:26] and I think that will be a good way of like good olding an agent loop, I think is like really much like kind of an art or intuition.
+[01:36] So yeah, before we get started, just curious a show of hands, how many people have heard of the cloud agent SDK or okay, great.
+[01:46] Cool, how many of like used it or tried it out? Okay, awesome, okay, so pretty good show of hands.
+[01:54] Yes, I will just get started on like the like you know overview on agents.
+[02:00] I think that like this is, I think something that I've seen before,
+[02:05] but I think it's still, it's taking some time to like really think in how AI features are evolving.
+[02:13] You know, so I think like when GPD, you know, three came out, it was really about like single
+[02:19] LM feature, right? You're like, oh, like, hey, can you categorize this? Like return and
+[02:23] be in a response to what these categories, and then we've got more like workflow like things, right?
+[02:29] Hey, like can you like make this e-mail and label it or like, hey, here's my code base, like index
+[02:36] via rag, can you give me like the next completion or the next, the next file that I did, right?
+[02:42] And so that's what we call like a workflow where you're very like structured, you're like, hey,
+[02:48] like, given this code, give me code back out, right? And now we're getting to agents, right? And
+[02:56] like the canonical agent he is called code, right? Cloud code is a tool where you don't really
+[03:04] tell it, we don't restrict what he can do really, right? You're just talking to it in text,
+[03:09] and it will take a really wide variety of actions, right? And so agents build their own context,
+[03:16] like decide their own trajectories are working very, very autonomously, right? And so,
+[03:22] yeah, and I think like as the future goes on, like agents will get more and more economists,
+[03:29] and we, I think it's like we're kind of at a great point where we can start to build
+[03:34] these agents. They're not perfect, you know, but it's definitely like the right time to get started.
+[03:40] So yeah, Cloud code and so many of you have tried or used, it is, yeah, I think the first true agent,
+[03:50] right? Like the first time where I saw an AI working for like 10, 20, 30 minutes, right? So,
+[03:58] yeah, it's a coding agent.
+[04:00] And the Cloud Agin SDK is actually built on top of Cloud Code.
+[04:05] And the reason we did that is because basically the found that when we're building agents at a Throbbing,
+[04:15] we can have to rebuild the same parts over and over again.
+[04:19] And so to give you a sense of what that looks like, of course, they're the models to start.
+[04:26] And then in the hardest you've got tools, right?
+[04:28] And that's like sort of the first obvious step.
+[04:30] Like let's add some tools to this.
+[04:32] Hardness and later on we'll give an example of sort of like trying to build your own harness from scratch too
+[04:39] and what that looks like and how challenging it could be.
+[04:42] But tools are not just like your own custom tools.
+[04:45] It might be tools that attracted their file system like with Cloud Code.
+[04:48] Did the volume just go up or whether you're not holding it close up.
+[04:54] Okay, it's just a neck on how it anyway.
+[04:56] Got tools, tools you run in a loop and then you have the prompts, right?
+[05:00] Like the core agent prompts, the prompt, the course, it seems like that.
+[05:06] And then finally you have the file system, right?
+[05:11] Or enough, right?
+[05:12] But you have the file system.
+[05:13] The file system is a way of context engineering that we'll talk more about later.
+[05:19] And I think like I wanted the key insights we have through Cloud Code was thinking a lot more through
+[05:25] like context not just a prompt, it's also the tool, the files that it can use.
+[05:31] And then there are skills which we've like rolled out recently and we can talk more about skills.
+[05:37] If that's interesting to you guys as well.
+[05:40] And then yeah, things like sub-agents, web search, you know like research,
+[05:47] compacting, hoax, memory, there are all these like other things around the harness as well.
+[05:53] And it ends up being quite a lot.
+[05:56] So the Cloud Agents SDK is all of these things packaged up.
+[06:00] to be used.
+[06:02] Yeah, you have your application.
+[06:05] So I think like to give you a sense of, yeah, to give you a sense of like maybe why the cloud
+[06:17] agent SDK is, yeah, like so yeah people are really building agents on the SDK a lot of
+[06:26] software agents, you know software reliability security, and so you've been triaging bug
+[06:31] finding site and dashboard builders through these are extremely popular if you're using it
+[06:37] and you should absolutely investigate MS office agents if you're doing any sort of office work,
+[06:43] tons of examples there, got some like you know, legal finance health care ones.
+[06:49] So yeah, there are tons of people building a top of it.
+[06:53] I want to, but yeah, okay, so why the cloud agent SDK where I like why did we do it this
+[07:00] way?
+[07:01] It's why did we build on top of cloud code?
+[07:03] And we realized basically that as soon as we put cloud code out, yeah, the engineers started
+[07:08] using it, but then the finance people started using it and the data science people started
+[07:12] using it and the marketing people started using it.
+[07:15] And yeah, I think it's just like, we just realized that people were using cloud code for
+[07:20] cloud coding tests and we felt and and every building, you know, non-coding agents, we kept coming back to
+[07:28] it, right?
+[07:29] And so it's a like and we'll go more into why that just works, why we could use cloud code for
+[07:38] non-coding tasks, spoiler leverage like the bash tool.
+[07:42] But yeah, it's it was something that we saw as an urgent pattern that we want to use and we've
+[07:49] been using our agents on top of it, right?
+[07:51] And these are lessons that we've learned from deploying cloud code that we've sort of baked in.
+[07:56] So tool it use errors or compacting or things like that.
+[08:00] Stuff that is like very
+[08:01] can take a lot of scale to find
+[08:04] you know like what are the best practices
+[08:05] be sort of picked into the quality of Genestika.
+[08:08] As a result we have a lot of strong opinion
+[08:10] on the best way to build agents.
+[08:12] Like I think the quality of Genestika is quite opinionated
+[08:15] we'll talk over some of these opinions
+[08:17] and why we show them right.
+[08:22] But yeah one of the big opinions
+[08:23] that the bash tool is the most powerful agent tool.
+[08:26] So okay what what are we like
+[08:29] what I would describe as the anthropic way to build agents.
+[08:32] Right and I'm not saying that you can only build agents using the API this way
+[08:35] right but this is like if you're using our
+[08:38] opinionated stack on the Agen SDK what is it right.
+[08:42] So roughly a UNIX primitive it's like the bash and file system
+[08:47] and you know we're going to go over like prototyping an agent using
+[08:51] Cloud Code and my goal is really to sort of show you what that looks like in real time.
+[08:56] Right like why is bash useful?
+[08:58] Why is the file system useful?
+[09:00] Why not just use tools?
+[09:03] Yeah agents.
+[09:04] I mean you can also make a proposal talk about that a bit later.
+[09:07] The agents build their own contacts.
+[09:09] Thinking about code generation for non-coding.
+[09:13] Like we use code gen to generate dogs,
+[09:15] script web, like do data analysis, take unstructured action.
+[09:20] So there's a lot of like this can be three counter-intuitive
+[09:25] to some people and again within the like prototyping session.
+[09:29] We'll go over how to use code generation for non-coding agents.
+[09:33] And yeah every agent has a container or is hosted locally because this is
+[09:37] Cloud Code.
+[09:38] It needs a file system and needs bash and needs to be able to operate on it
+[09:42] and so it's a very very different part of the texture.
+[09:44] I'm not planning to talk too much about the architecture today but
+[09:48] we can at the end that's what people are interested in.
+[09:51] In the or sorry by architecture I mean hosting architecture like how do you host
+[09:55] and like what are best practices there?
+[09:58] Have you talked about that at the end?
+[10:00] Yeah, so well, let me pause there because I feel like I've covered a lot already.
+[10:07] Any questions so far on the agency K agents?
+[10:12] Yeah, like what you got from it?
+[10:15] Can you explain what code generation for non-coding means?
+[10:19] Yeah, this is basically when you ask a code to do a task, right?
+[10:27] Let's say that you ask it to find the weather in San Francisco and tell me what I should wear or something.
+[10:37] What it might do is it might start writing a script to fetch a weather API, right?
+[10:46] And then start like maybe it wants it to be reusable, like maybe you want it as pretty often, right?
+[10:52] So it might affect the weather API and then get maybe even get your location dynamically, right?
+[10:59] Based on your IP address and then it will like check the weather and then maybe like call out to like a sub agent to give you recommendations.
+[11:10] Maybe there's an API for your closet or wardrobe, right?
+[11:14] So that's an example. I think that it's kind of for any single example we can talk about or how you might use code code.
+[11:23] A lot of it is like composing API is like the high level with the whole thing.
+[11:28] Yeah, yeah, workflow has to be staged and like for repetitive tasks or like a process of business process that is always the same.
+[11:37] We still prefer to build an agent, because we need a thermistic workflow.
+[11:43] Yeah, so we do have.
+[11:47] Oh sure, yeah, so the question was about workflows versus agents and we used to use a cloud agency, okay, for workflows, right?
+[11:57] Yes, and so.
+[12:00] I mean, we just sort of tell you what we do internally.
+[12:05] Basically, and what we do internally is we've done a lot of like,
+[12:08] GitHub automation and Slack automation, built on the Cloud Agents SDK.
+[12:12] So, you know, we have a bot that triage its issues when it comes in.
+[12:15] That's a pretty workflow like thing, but we've still found that, you know,
+[12:19] in order to triage issues, we wanted to be able to clone the code base,
+[12:22] and sometimes been up a Docker container and tested and things like that.
+[12:25] So, it still ends up being like a very,
+[12:28] like there's a lot of steps in the middle that need to be quite
+[12:31] very flowing, and then you like, get structured out at the end.
+[12:35] So, yes.
+[12:38] All right, we'll take one more question and then keep going.
+[12:40] So, yeah, and the blue.
+[12:41] Yeah, so could you talk about security and guardians, like,
+[12:44] if you're using Cloud Agents SDK and, you know,
+[12:47] you're leading towards using Bash as the, you know, all the powerful generic tool.
+[12:51] And is the onus on building the Asian builder to make sure that, you know,
+[12:57] if you're letting it against, like, common adapte vectors,
+[13:00] or is that something that the model is doing?
+[13:03] Yeah, so, I think this is sort of like the Swiss chief.
+[13:06] Oh, yes, I guess the question was, permissions on the Bash tool, right?
+[13:11] Or like, how do you think about permissions and guardrails that, like,
+[13:15] and like, when you're giving the agent this much power over, you know,
+[13:19] or is it an argument in the computer? How do you make sure it's aligned, right?
+[13:22] And so the way we think about this is, boy call it the Swiss chief's defense, right?
+[13:27] So, like, there is, like, on every layer, some defenses, and together,
+[13:32] we hope that it, like, blocks everything, right?
+[13:35] So, obviously, on the model layer, we do a lot of alignment there.
+[13:40] We actually just put out a really good paper on reward hacking.
+[13:44] Super recommend you check that out.
+[13:47] So, like, definitely, I think, claw models, like, we try and make them very, very aligned, right?
+[13:51] And so, yeah, there's a model alignment behavior.
+[13:55] Then there is, like, the harness itself, right?
+[13:58] And so, we have a lot of, like, permission.
+[14:00] and prompting.
+[14:02] And let me do aST pass parser on the bash tool, for example.
+[14:07] So we know fairly reliably what the bash tool is actually doing.
+[14:12] And definitely not something you want to build yourself.
+[14:15] And then finally, the last layer is sandboxing.
+[14:19] So let's say that someone has maliciously taken over your agent.
+[14:23] What can it actually do?
+[14:25] We've included a sandbox in where you can sandbox and then we're questions.
+[14:29] And then we're quest.
+[14:31] And sandbox file system operations outside of the file system.
+[14:35] And so ultimately that's what they call the legal tri-facto.
+[14:40] It is like the ability to execute code and environment,
+[14:44] change the file system, and execute the code.
+[14:48] I think I'm getting the legal tri-facto overrun.
+[14:51] The idea is based on if they can execute your information back out.
+[14:57] That's like they still need to build like struct information.
+[15:00] So if you sandboxed in that work, that's a good way of doing it.
+[15:03] If you're hosting on a sandbox container like how to layer,
+[15:07] modal or even be a total like all these,
+[15:10] like sandbox providers, they've also done like some level level of security there.
+[15:15] Like you're not hosting on your personal computer or on a computer with your prod secrets or something.
+[15:20] So lots of different layers there.
+[15:22] And we can talk more about hosting in depth.
+[15:25] So okay, so I'm going to talk a little bit about bash and all you need.
+[15:32] You know, I think this is something that, like,
+[15:36] this is like my stick, you know,
+[15:39] I'm just going to like keep talking about the central everyone like,
+[15:42] like crazy with me.
+[15:44] Or like I think this is something that we found add in traffic.
+[15:47] I think this is sort of something I discovered once I got here.
+[15:52] Bashed what makes talk looks like good, right?
+[15:54] So I think like you guys have probably seen like code mode for traumatic tools.
+[16:00] like the, like for ways of like computing and stuff.
+[16:03] He's, topflare's put out some block list on that.
+[16:06] We put out some block list.
+[16:08] The way I think about code mode is like order batches
+[16:11] that it was like the first code mode, right?
+[16:14] So the bash tool allows you to, you know,
+[16:16] like store the results of your tool calls to files,
+[16:19] store memory, dynamic generated scripts
+[16:21] and call them, compose functionality, like tail, graph.
+[16:26] Let's do using existing software like FM,
+[16:28] and then groupy process, right?
+[16:30] So there's a lot of like interesting things
+[16:32] and powerful things that the bash tool can do.
+[16:35] And like think about like again,
+[16:37] what made code code so good?
+[16:38] If you were designing an agent harness,
+[16:40] maybe what you would do is you'd have a search tool
+[16:43] and a late tool and execute tool, right?
+[16:46] And like you know, and tools, right?
+[16:48] Like every time you thought of like a new use case,
+[16:49] you're like, I need to have another tool now, right?
+[16:52] Um, instead now, plot just uses graph, right?
+[16:56] And those your package managers,
+[16:57] or it runs like NPM run like test.es or index.es,
+[17:03] or whatever, right?
+[17:04] Like if you link, right, and you can find out how you link,
+[17:06] right, and you can run NPM run link.
+[17:08] If you don't have a link or you can be like,
+[17:10] what if I install ES link for you, right?
+[17:12] So this is like the first programmatic tool calling,
+[17:17] first code mode, right?
+[17:19] Like you can do a lot of different actions,
+[17:22] very, very generically, right?
+[17:25] And so to talk about this a little bit
+[17:28] in the context of non-coding agents, right?
+[17:31] So let's say that we have an email agent,
+[17:35] and the user is like, okay, how much did I spend
+[17:38] on right sharing this week?
+[17:41] Hey, you know, like it's called one tool call,
+[17:43] or generally it's got the ability to search your inbox, right?
+[17:47] And so it can run a query like, hey,
+[17:49] search Uber or lift, right?
+[17:52] And without bash, it's searching Uber lift.
+[17:57] It gets like 100 emails or something.
+[18:00] And I was just got to think about it.
+[18:03] And I think a good analogy, sort of imagine
+[18:07] if someone came to you with a stack of papers
+[18:10] and like, hey, how much did I spend on ridesharing this week?
+[18:12] Can you read through my email?
+[18:14] See, I mean, that would be really hard.
+[18:16] Like, you need a very, very good precision
+[18:19] and we call it to do it.
+[18:21] Or with bash, let's say there's a Gmail search,
+[18:25] it's good.
+[18:25] It takes an inquiry function.
+[18:28] And then you can start to save that query function
+[18:32] to a file or type it.
+[18:34] You can grab for prices.
+[18:36] You can then add them together.
+[18:38] You can check your work, too.
+[18:40] Like, you can say, okay, let me grab all my prices.
+[18:43] Store it those as like in a file line numbers
+[18:46] and then let me then be able to check afterwards
+[18:49] like, was this actually a price?
+[18:51] Like, what is each one correlate to?
+[18:54] So there's a lot more dynamic information you can do
+[18:57] to check your work with the bash tool.
+[18:59] So this is like, this a simple example,
+[19:04] but like, hopefully showing you sort of the power
+[19:06] of like the capability of bash, right?
+[19:08] So I'll pause there, any questions on bash
+[19:11] is all you need, the bash tool, any thing
+[19:14] I can make a little bit clearer.
+[19:16] Yep, do you have stats on how many people
+[19:17] you use your own load?
+[19:18] Nice, keep it sliced.
+[19:21] That's on the old mode.
+[19:22] We probably too, I mean, internally, we don't.
+[19:27] But that's just, I think we just have a higher security
+[19:29] posture.
+[19:31] Yeah, I'm not sure.
+[19:34] I can probably pull that.
+[19:36] Any other questions on bash?
+[19:39] Okay, cool.
+[19:40] Yeah, just to give you like some more examples,
+[19:43] like, let's say that you had an email API
+[19:47] and you wanted to, you know, like, go through,
+[19:51] like, first mind, like, tell me who emailed me this week, right?
+[19:54] So you've got two APIs, you've got an inbox API
+[19:56] and a contact API.
+[19:58] This is like a way you can do it to be a bad.
+[20:00] She also do a video code gen.
+[20:01] This is kind of like enough bash that it is code gen, right?
+[20:04] Like, bash is a, ostensibly code gen tool.
+[20:09] And then, yeah, like, let's say that you wanted to go
+[20:12] to a video meeting agent, right?
+[20:14] You want to say like, find all the moments
+[20:16] where the speakers have quarterly results
+[20:18] in this earnings call, right?
+[20:19] You can use FFM to like, slice up this video, right?
+[20:23] You can use JQ to like, start analyzing the information
+[20:27] afterwards.
+[20:29] Yeah, lots of like, depth like powerful ways
+[20:32] to use bash.
+[20:34] So, all right, I'm gonna talk a little bit
+[20:37] about workflows and agents.
+[20:38] They can do both.
+[20:39] You can use Bill workflows and agents on the H&SK.
+[20:44] Yeah, agents are like, cloud code.
+[20:45] So, if you are like building something where you want
+[20:48] to talk to it in natural language
+[20:50] and action flexibly, right?
+[20:53] Then, that's where you're building an agent, right?
+[20:55] Like, you want, you have an agent that talks
+[20:57] to your business data and you want to get insights
+[21:00] or dashboards or answer questions or write code
+[21:03] or something like that's an agent, right?
+[21:05] And then, a workflow is kind of like,
+[21:08] we do love GitHub actions, for example.
+[21:10] Right? So, you define the inputs and outputs very closely, right?
+[21:12] So, you're like, okay, can't get a PR
+[21:14] and give me a overview.
+[21:16] And yeah, both of these, you can use the H&SK4.
+[21:20] When building workflows, you can use start-in-out inputs
+[21:22] that we just release this.
+[21:25] You can, yeah, Google, okay.
+[21:26] These are no stick data start-in-out inputs.
+[21:30] But yeah, so you can do both.
+[21:31] I'm going to primarily be talking about agents right now.
+[21:34] A lot of the things that you can learn from this
+[21:38] are applicable to workflows as well.
+[21:41] So, yeah, we'll talk about this.
+[21:46] Wait, I showed hands how many people
+[21:47] have designed an agent loop before.
+[21:51] Okay, cool, okay, great, great.
+[21:53] So, yeah, I mean, I think the number one thing
+[21:57] that the metal learning for design agent loop to me.
+[22:00] is just a read the transcripts over and over again.
+[22:03] Like every time you see the HR run and just read it,
+[22:06] if you're like, hey, what is it doing?
+[22:08] Why is it doing this?
+[22:09] Can I help it out somehow?
+[22:14] And we'll do some of that later.
+[22:16] So we'll build an agent loop.
+[22:20] But here is the three parts to an agent loop.
+[22:25] So first it's gather context.
+[22:29] Second is taking action.
+[22:32] And the third is very fun to work.
+[22:34] Right?
+[22:35] And this is not the only way to build an agent,
+[22:40] but I think a pretty good way to think about it.
+[22:43] Gathering context is for clock code,
+[22:47] it's grabbing and finding the files needed.
+[22:50] For an email agent, it's finding the relevant emails.
+[22:55] And so these are all pretty, yeah,
+[23:00] like I think thinking about how it finds
+[23:02] this context is very important.
+[23:03] And I think a lot of people sort of skip this step
+[23:07] or under-think it.
+[23:09] This can be very, very important.
+[23:11] And then thinking action, how does it do its work?
+[23:15] Does it have the right tools to do it?
+[23:17] Like cogeneration, bash, these are more flexible.
+[23:20] These take action.
+[23:22] And then verification is another really important step.
+[23:25] And so basically what I'd say right now
+[23:28] is like if you're thinking of building an agent,
+[23:30] think about like, can you verify its work?
+[23:35] And if you can verify its work, it's like a great
+[23:37] candidate for an agent.
+[23:39] If you can verify its work, like it's like,
+[23:41] you know, coding, you can verify by blending.
+[23:44] And you can at least make sure it compiles.
+[23:46] So that's great.
+[23:47] If you're doing, let's say a deep research, for example,
+[23:49] attachment a lot harder to verify your work.
+[23:52] One way you can do it is by citing sources.
+[23:54] And that's like a step in verification.
+[23:56] But obviously to be searches,
+[23:58] let's verify a bold and code in some.
+[24:00] Right because like code has a compile step right you can also like execute it and see what it does right so
+[24:06] I think like thinking on you know like as we build agents the ones that are closest to being very general or the
+[24:12] One-short of their hairifications step that is very strong right so I think there was a question here. Yeah
+[24:26] Yeah, I mean
+[24:29] Oh, yeah, sorry the question was when you generate a plan
+[24:33] for you run through it so
+[24:37] Like in cloud code you don't always generate a plan
+[24:39] but if you want to you did sort of between the gathering context and taking actions that right and so
+[24:46] Plants sort of health agent think through step by step, but they add some latency right and so there is like some trade off there
+[24:54] But yeah, the agent has to kind of help skew like do some planning as well. So yeah
+[24:59] Yeah, you like made the agent create that to do this for like
+[25:06] 100% sure that people create that to do this then run by
+[25:12] Yeah, so the question was will the agent create the to do list?
+[25:17] Yes, if you're using the investigative care we have like some to do tools like come with it and so it will like
+[25:22] maintain and check off to do as you can display that and as you go. So yeah
+[25:29] Any other questions about this right now?
+[25:32] Okay cool. Okay, so I'm gonna quickly talk about like like how do you do this stuff?
+[25:38] You like what are your tools for doing right and
+[25:43] There are three things you can do there you have tools bash and co-generation
+[25:47] Right and I think traditionally I think a lot of people that are only thinking about tools and
+[25:52] Yeah, basically one of the call actions is just figuring out like thinking about
+[25:56] It won't wrong thing right so tools are extremely structured and very
+[26:00] reliable. If you want to have as fast and output as possible with minimal errors, minimal
+[26:07] retries, tools are great. Cons, high-context usage, if anyone's built in agent with 50 or 100
+[26:15] tools, they take up a lot of context and the model gets a little bit confused. There's
+[26:21] no sort of discoverability of the tools and they're not composable. I say tools in the sense
+[26:28] of if you're using messages or completion API right now, that's how the tools work.
+[26:35] Of course, there's code mode and programming tool calling, so you can sort of blend some
+[26:39] of things. But move bash. So bash is very composable. Like static scripts, low-context
+[26:48] usage. You can take a little bit more discovery time. Let's say that you have whatever
+[26:53] you have the PlayRay MCP or something like that. Sorry, the PlayRay CLI, the PlayRay like
+[26:59] bash tool. You can do PlayRay Dash-Hell to figure out all the things you can do, but the
+[27:05] agent needs to do that every time. So you need to discover what it can do. Which is kind
+[27:09] of powerful that helps take away some of the high-context usage, but add some latency. There
+[27:15] might be slightly lower call rates, just because it has a little bit more time to every
+[27:22] week. So find the tools and what it can do. But this will definitely improve as it goes.
+[27:28] Then finally, code gen, highly composable dynamic scripts. They take the longest to execute.
+[27:36] So they need LinkedIn, possibly compilation. API design becomes a very interesting step here.
+[27:44] And I'll talk more about how to think about API design and an agent. But I think this
+[27:51] is like how the three tools you have. So you're using tools. You still want tools, but you
+[27:58] want to think about them.
+[28:00] As atomic actions, your agent usually needs to execute in sequence and you need a lot of control over.
+[28:05] For example, in Cloud Code, we don't need to bash to write a file. We have our right file tool, right?
+[28:11] Because we want the user to be able to see the output and approve it and we're not really composing
+[28:18] right file with other things, right? It's like a very atomic action.
+[28:22] Setting an email is another example. Any sort of non-destructable or un-reversible
+[28:29] change is definitely like a tool is a good place for that.
+[28:34] The new got bash. So for example, there are like
+[28:39] composable actions like switching a folder, using GitHub,
+[28:42] linking code and checking for errors or memory. And so yeah, you can write files to memory and that
+[28:49] can be your bash. Like bash to be your memory system for example, right? So
+[28:54] and then finally you've got code generation, right? So if you're trying to do this like
+[28:57] highly dynamic for flexible logic, composing APIs, if you do data analysis or
+[29:03] you pre-search or what we're using patterns. And so yeah, we'll talk more about
+[29:08] co-generation and a bit. Any questions so far about like the SDK loop or tools versus
+[29:16] bash versus co-gen? Yeah. Yeah, I was in your house.
+[29:20] I thought I needed ready to use tools or like off-liming, move that results.
+[29:27] I'm floating tools on results like into the file system or like a fancy
+[29:30] goes to bash and how it has exploded. So it like
+[29:34] type your command that like do everything up. Okay. Or otherwise just like long
+[29:38] outputs, believe in your history. Sure. Yeah. How about like all the time just
+[29:43] uploading them files? Yeah, yeah. I think that's a good common practice. I think
+[29:51] we I remember seeing some piers about this very interestingly on a cloud code about
+[29:57] handling very long outputs and
+[30:00] I don't know exactly.
+[30:05] I think we are moving towards a place where more and more things are being just stored
+[30:10] in this process.
+[30:11] And this is a good example.
+[30:12] Yeah, like, storing long outputs over time.
+[30:17] I think generally, the homepage into this is a good way to think about it.
+[30:22] Or even if you have, I think something I just do always
+[30:25] like, whenever I have a tool called, I say it like the results of the tool called to the
+[30:31] file system so that you can sort of trust it and then have the tool called return the
+[30:35] path of the result.
+[30:38] Just because that helps it, like, sort of, reject its work.
+[30:43] So, yes.
+[30:45] So, do you find that between two, here's like the skills, kind of structure to help
+[30:52] plot along to the fashion better or out of the box.
+[30:58] Yeah, so the question was about skills and, like, do we need skills to use bash better?
+[31:04] Yeah, for context skills, maybe a bit of good, and then there are skills.
+[31:10] Okay, yeah, skills are basically a way of allowing our agent to take longer complex tasks
+[31:19] and, like, sort of, load in things via context, right?
+[31:22] So, for example, we have a bunch of docX skills and these docX skills tell it how to do cogeneration
+[31:29] to generate these files.
+[31:31] Right?
+[31:32] And so, yeah, I think overall skills are basically just a collection of files.
+[31:38] There are also, sort of, like, an example of being very, like, file system or battoilpill, right?
+[31:44] Because they're really just folders that your agent can, like, CD into and, like, read, right?
+[31:51] And so, yeah, they give, like, what we found these skills are really good for is pretty, like, repeatable instructions
+[31:59] that need, like,
+[32:00] a lot of expertise in them.
+[32:02] Like for example, we released a front end design skill recently
+[32:05] that I really, really like.
+[32:07] And it's really just sort of a very detailed and good prompt
+[32:12] on how to do front end design.
+[32:13] But it comes from our best AI front end engineer.
+[32:19] I mean, he really put a lot of top thought
+[32:21] and iteration to it.
+[32:22] So that's one way of using skills.
+[32:25] Yeah.
+[32:27] Quick question.
+[32:28] Yes.
+[32:29] Sure.
+[32:30] It's pretty important.
+[32:31] Thanks for the information.
+[32:34] I have more understanding.
+[32:35] There are more people who don't get any praise.
+[32:37] They're smart and easy to do.
+[32:39] So there are a little sort of things that they're just trying to project.
+[32:42] And then there are still a lot of insights.
+[32:45] Thank you.
+[32:46] Is that like a higher, you know, sure some stuff.
+[32:48] We really get to do our project.
+[32:50] Yes.
+[32:51] Some other stuff should be going to come.
+[32:53] So the question was about,
+[32:55] how skilled I've been to versus Claude at MD and how to think about that.
+[33:02] And I think like, I also, all of these concepts are so new.
+[33:06] You know, even Claude is like, at least a eight or nine months ago, right?
+[33:11] And so skills are really like two weeks ago.
+[33:14] I won't pretend to know all of the best practices for everything.
+[33:19] I think generally, skills are a form of progressive context disclosure.
+[33:24] And that's sort of the pattern that we've talked about a bunch, right?
+[33:27] Like with like a bash and you know, like referring that over like, you know, purely
+[33:32] like normal tool calls is like, it's a way of like the agent being like, okay,
+[33:36] I need to do this.
+[33:37] Let me find out how to do this and then I'll be reading this skill that MD.
+[33:42] Right? So you ask it to make a doc expile and then like see these into the directory.
+[33:47] Read how to do it.
+[33:48] Write some scripts and keep going.
+[33:50] So yeah, I think like there's still some sort of
+[33:52] issue to build around like what exactly you like define as a skill and how you split it out.
+[34:00] But yeah, I think lots of best practices still are there still.
+[34:07] Yeah.
+[34:08] So yesterday, I talked about the future skills.
+[34:13] Okay.
+[34:15] Do you save these as a possibility?
+[34:17] Am I part of the motto?
+[34:18] And you mean, the best of these skills is just a way to bridge the gap.
+[34:22] Yeah.
+[34:23] So the question was, are skills ultimately part of the model?
+[34:28] Are there a way to bridge the gap?
+[34:29] I miss Barry's talk at Barry and I should talk yesterday.
+[34:32] But yeah, I think roughly the idea is that the model will get better and better
+[34:36] at doing a wide variety of tasks and skills are the best way to give it out of distribution tasks.
+[34:41] Right?
+[34:42] But I would broadly say that like it's really really hard, especially like, you know,
+[34:49] if you're like not at a lab to like tell where the models are going exactly.
+[34:56] My general rule of thumb is like, I try to like rethink the rewrite my like agent code like every six months.
+[35:03] This is because I'm like, I think it's probably changed enough that I blank baked in some assumptions here.
+[35:08] And so like I think that like our agent SDK is built to as much as possible sort of advance with capabilities.
+[35:15] Right?
+[35:16] Like the bash tool will get better and better.
+[35:18] We're building on top of the clock code.
+[35:20] So as clock code evolves, you'll get those wins out of the gate.
+[35:24] But at the same time like, you know, things are so different now like than they were.
+[35:30] You're an intern with like AI engineering, right?
+[35:33] And I think like a general best practice to me is sort of like, maybe you can write code ten times faster.
+[35:39] You should throw out code ten times faster as well.
+[35:42] And I think thinking about like not so like hedging your bets on like where is the future right now.
+[35:49] But like what can we do today that really works, right?
+[35:53] And like like let's get market share today and not be afraid to throw out code later.
+[35:58] if you're a
+[36:00] First start up, this is arguably your largest advantage that you have over competitors.
+[36:04] They're like, you know, companies have like six months incubation cycles.
+[36:08] And so they're always like stuck in the past of like, with the agent capabilities, right?
+[36:13] And so your advantage is that you can like, be like,
+[36:16] the capabilities are here right now.
+[36:18] Let me build something that uses this right now, right?
+[36:21] So, um, yeah, uh, any, any other questions on,
+[36:29] for talking about skills and bash, okay, it seems like there are a lot of skill questions.
+[36:33] So, um, yeah, I think, at the back, so when you might have to shout.
+[36:40] Yeah, so why don't you use the skill versus the API?
+[36:43] They look very similar to what I'm doing here.
+[36:46] That might not work in there, it's going to be a package, right?
+[36:49] Yeah, so question was, why use the skill versus an API?
+[36:52] Um, good question.
+[36:53] I think that like, um,
+[36:56] when you like these are all forms of progressive disclosure,
+[36:59] basically today agent to figure out what it needs to do.
+[37:02] Um, and I'll go over like, uh, examples of like, you just have an API, right?
+[37:07] And in our like, in our prototype exception, um,
+[37:11] it's totally like use case dependent, right?
+[37:14] Like just, uh, I think like, I don't have a, like, I don't think there's a general rule.
+[37:19] I think it's like read the transcript and see what your agent wants.
+[37:21] If your agent always wants, like, things about the API better as like a,
+[37:25] API.ts file or something or API.
+[37:28] If you had a PYTL do that, you know, that's great.
+[37:30] Like I think skills are like, like sort of an introduction into like,
+[37:34] thinking about the file system as a way of storing context, right?
+[37:37] And they're a great abstraction, um, but there are many ways to the
+[37:42] file system. Um, and I should say that like something about skills that like,
+[37:46] you need the bash tool, you need a virtual file system, things like that.
+[37:50] So the agent SDK is like basically the only way to really use skills
+[37:54] to like their full extent right now. So, um, yeah, you have back there.
+[37:58] You may expect too much.
+[38:00] Yeah, the question was, can we expect a marketplace for skills?
+[38:04] So, yeah, clock code has a plug-in marketplace that you can also use with the
+[38:10] Agen SDK. We're evolving that over time. It was like a very much a V0.
+[38:16] And by marketplace, I'm not sure if people will be charging for this
+[38:20] exact, it's more just like a discovery system, I think. But yeah, that is
+[38:24] right now you can do slash plugins in Cloud Code and you can find some.
+[38:28] So, yeah, what's your current thinking about when you're going to reach
+[38:32] your grid like the SDK to solve a problem?
+[38:36] Yes, the question is when do I use the SDK to solve a problem?
+[38:40] If I'm building an agent, basically, I think that like my overall belief is
+[38:48] that for any agent, the bash tool gives you so much power and flexibility
+[38:54] and using the file system to give you so much power and flexibility,
+[38:57] you can always eat out performance gains over it.
+[39:01] And so, yeah, in the prototyping part of this talk, we're going to look at an example
+[39:07] with only tools and an example without, you know, bash in the file system and compare those two.
+[39:13] And yeah, that's what I mean by that big bash tool, but I'm like,
+[39:16] I just like start from the agency, you know, and I think a lot of people had a
+[39:20] topic have started doing that as well. So, of course, I do want to say that there are
+[39:25] lots of times where the agency case kind of annoying, because you've got like this
+[39:30] network sandbox container and you're like, I hate playing. I don't want to do this.
+[39:33] You know, I mean, like, I want to run on my browser locally, right? I totally get that.
+[39:38] I think it's, there is like a real performance straight off. The way I think about it is sort of like
+[39:44] react versus like jQuery, you know, the guy, like I when I was coming up, I was like
+[39:49] very to web dev and like, you know, as you can jQuery and backbone and then react came out
+[39:53] and with my Facebook and they're like, you have to, here's JSX, like we just made this up and
+[39:58] and now there's a fun blur, right?
+[40:00] I'm like, I just don't know.
+[40:02] But they generally make some model,
+[40:04] or it makes, it made web apps more powerful.
+[40:08] And I think we're sort of like, the agency
+[40:10] has to collect the react of agent frameworks to me
+[40:13] because it's like, we build our own stuff on top of it.
+[40:16] So you know it's real.
+[40:18] And all the annoying parts of it are just like,
+[40:20] things we're annoyed about it,
+[40:21] to put we're like, we just work.
+[40:23] It's like you have got to do this.
+[40:25] Yeah.
+[40:26] So yeah.
+[40:27] Yeah.
+[40:29] Yeah, okay.
+[40:30] We're still a question if they guess, yeah, right here.
+[40:33] I want to ask about that.
+[40:34] That's a passion.
+[40:35] That's a great.
+[40:36] I want to ask them internal, like, bash tool.
+[40:38] Yeah.
+[40:39] How do you best be in this cover that?
+[40:41] What do you do with how to do the cool?
+[40:44] Okay, the question is, if you have custom agent
+[40:46] bash tools, how do you love the agent,
+[40:47] discover that?
+[40:48] Custom bash tools do you mean like,
+[40:50] bash and ravenc, or?
+[40:51] Yeah, bash, if they add that.
+[40:52] Yeah.
+[40:54] Yeah.
+[40:55] I think the word is it.
+[40:57] You just put it in the file system and you tell it,
+[41:00] like, hey, like, here is a script.
+[41:03] You can call it, you know, I have a journal thinking
+[41:05] in the context of the Cloud Agency K where it has
+[41:08] the file system and the bash tools are tied together.
+[41:12] This is kind of an anti-pattern.
+[41:13] I see some times where people are like,
+[41:15] oh, like, we're gonna host the bash tool
+[41:17] in this virtualized place.
+[41:19] And it's gonna not go into a drag
+[41:20] with other parts of like the agent loop, you know?
+[41:23] And that sort of makes it hard
+[41:25] because if you have a tool result that's saving a file,
+[41:28] then your bash tool can't like read it.
+[41:31] You know, I mean, unless it's all in one container.
+[41:34] So the design and two-ret嘲, like,
+[41:37] yeah, kind of, I mean, like,
+[41:38] so you just can't use it, put it in like,
+[41:40] because it's the pointer company.
+[41:41] Yeah, just put it in the system, probably.
+[41:42] Like, hey, you have access to this.
+[41:43] I would like sort of design all my CLIs scripts
+[41:46] to have like a dash dash help or something.
+[41:48] So that the model can call that.
+[41:49] And then it can, like, progressively disclose
+[41:52] like every, like, subcommand inside of this group.
+[41:55] Yeah.
+[41:57] Yeah, I'm like there.
+[41:58] Yeah. So, thank my question.
+[42:00] There's an ongoing to reach for the agent SDK.
+[42:02] So have that designed.
+[42:03] Or rather, would you recommend someone
+[42:05] use the agent SDK to build a generic chat agent,
+[42:09] as compared to, like, oh, you know, building an agent
+[42:12] where you have some input and the agent goes and does some stuff.
+[42:15] And finally, I can't about the output.
+[42:18] As compared to let's say someone, are you using
+[42:20] or do you foresee using the agent to build
+[42:23] like the agent SDK to build, like,
+[42:25] plot the app, rather than plot code?
+[42:29] Yeah, so the question is, when do we reach for the agent SDK?
+[42:33] It does, like, would we use the agent SDK to build
+[42:40] a client.ai, which is the more traditional chat bot
+[42:43] than to code?
+[42:46] One, I think, talk code is like a very, like interface
+[42:49] without a traditional chat bot interface.
+[42:51] But like the inputs and outputs are far,
+[42:54] or like you input code in, you get, like,
+[42:57] or you input text, and you get text out.
+[42:59] And you can take the actions along the way.
+[43:02] You might have seen that when we rolled out
+[43:04] doc creation for content.ai, now it has the ability
+[43:09] to spin up a file system and create spreadsheets
+[43:14] and PowerPoint files and things like that
+[43:16] by generating code.
+[43:17] And so that is, like, you know, we're in the midst
+[43:20] of sort of like, like, merging our agent loops and stuff
+[43:24] like that, but broadly, like, like, yeah,
+[43:28] how did it, it's getting more and more?
+[43:30] Like, you see it with skills and the memory tool
+[43:32] and stuff, more and more file system, pill, right?
+[43:34] So we do think this like a broad thing
+[43:37] that you can use just generally, and have
+[43:39] to talk to examples.
+[43:42] Yeah, one more question, then one more question.
+[43:44] What can you do on that?
+[43:45] Try to understand the rule of thumb on when to build a tool
+[43:48] or use a tool, when to wrap something with a script
+[43:53] or just let the agent go wild on the batch.
+[43:56] I'll give you an example and say I need to access.
+[44:00] database. From point to time, I can use an HTTP. I can wrap within a script and I can just
+[44:07] let the agent call an endpoint from that, the request from batch.
+[44:12] Yeah, great question. So it's still trying to grow, like, when to use tools for the
+[44:18] bash, but it's code unit, any given example, like, okay, I have a database. I want the agent
+[44:22] to be able to access it in some way, which they do, should I create a tool that queries the
+[44:27] database in some way, should I use the bash, should I use code unit? These are all, these
+[44:32] are three ways of doing it. I think that they are, like, you could use any of them, and I
+[44:38] think, like, part of it is like, I think, unfortunately, there's no, like, single best
+[44:44] practice, right? This is, like, kind of, the system design problem. But let's say that you
+[44:47] want to access your bash, your database via a tool. You would do that if your database was
+[44:52] very, very structured and you might be very careful about, like, you're accessing, like,
+[44:58] user-sensitive information or something like that. And you're like, hey, I can only take
+[45:03] in this input and I need to, like, do this output and I have to mask everything else about
+[45:09] the database from the agent, right? Obviously, that, like, sort of limits what the agent
+[45:15] can do, right? Like, I can write a very dynamic query, right? If you're writing a full
+[45:20] on SQL query, I would definitely use bash or code unit just because when the model is
+[45:26] writing a SQL query, you can make mistakes. And the way it fixes it is, is, is, is, is,
+[45:31] mistakes is by, like, lifting or, like, running the file, looking at the output, seeing
+[45:36] if there are errors, and then iterating on it, right? And so, I generally, like, if I'm
+[45:43] building an agent today, I'm giving it as much access to my database as possible, and then
+[45:48] like, putting in guard routes, right? Like, I'm probably limiting it's like right access
+[45:53] in different ways, but what it probably, what I would do is, like, I would give it right
+[46:00] access and putting specific rules and then give it feedback if you're tries to do something
+[46:05] you can't do.
+[46:06] I know this is kind of a hard problem, but I think this is the set of problems for us to
+[46:12] solve.
+[46:13] We built a bash tool parser and that's super annoying problem, but we need to solve that in
+[46:20] order to let the agent work generally.
+[46:24] Same thing with data based, it's quite hard to understand what is it preview doing.
+[46:29] If you can solve that, you can let your agent work more generally over time.
+[46:34] Yeah, I think thinking about it, like flexibly as much as possible, and keeping tools to be
+[46:39] very, very atomic actions, that you need a lot of guarantees around.
+[46:44] How do you ensure that all the data is being built out of the data?
+[46:55] How do you ensure that the role-based access controls are taken care of?
+[47:01] Usually that's in how you provision your API key or your back-and-service or something like
+[47:05] that.
+[47:07] I think that what it does like in creating temporary APIs, sometimes people create proxies
+[47:13] in between to insert the API keys.
+[47:15] If you're concerned about the acceleration of that, but you create APIs for your agents
+[47:21] that are scoped in certain ways.
+[47:23] So then on the back-and, you can check what it's trying to do.
+[47:28] If it's an agent, you can give a different feedback.
+[47:32] I have one question.
+[47:35] Anything you would tell us more about the memory to determine what memory is working?
+[47:43] I'm not trying to keep a secret.
+[47:46] I don't know exactly how to run the code, but I think it generally works on the size system.
+[47:51] So it's supposed to be a location as the keyers have already been.
+[47:58] I wouldn't say that like.
+[48:00] We've had this question a bunch.
+[48:01] I would just use the files of the, in the cloud agent SDK.
+[48:04] I would just create a memory folder or something
+[48:05] and call it the right memory, is there?
+[48:08] It's like, I don't know the exact implementation
+[48:11] of the memory tool, but it does use the file system
+[48:13] in that way.
+[48:14] So yeah.
+[48:16] All right, well, yeah, last question on this.
+[48:19] How are you a minute for the version record?
+[48:22] How are you a minute in the, like,
+[48:24] re-useability, suppose the same,
+[48:26] maybe in the allows to hundreds of users
+[48:28] and same code every time it is generating
+[48:31] and every time it is executing.
+[48:33] So how can we use the utility?
+[48:36] Yeah, that's a really good question.
+[48:37] So yeah, let's say you have two agents interacting
+[48:42] with two different people.
+[48:44] The question is like, how do you think about reusability
+[48:46] between agents or how do agents communicate, right?
+[48:51] I think this is a thing to be discovered.
+[48:56] I think there's a lot of best practices
+[48:58] and system design to be done on, like,
+[49:02] because traditionally with web apps,
+[49:03] you're serving one app to like a million people, right?
+[49:06] And with agents, like with code,
+[49:08] we serve like, you know, a one to one container
+[49:12] when you use a co-co-on the web,
+[49:14] it's like, it's your container, right?
+[49:16] And so there's not a lot of like,
+[49:18] communication between containers.
+[49:20] It's a very, very different paradigm.
+[49:21] I'm not going to say that like,
+[49:23] I know exactly the best system design to do that, right?
+[49:26] And like, I think there's a lot of best practices
+[49:28] on like, okay, these agents are reusing work.
+[49:31] How can we give them like, like, hot, like,
+[49:34] general scripts that combine together the work that they've done,
+[49:37] how can we make them share it?
+[49:39] I would generally think, this is sort of like a tangent
+[49:42] about on like, agent communication frameworks.
+[49:46] I would say that like, we probably don't need,
+[49:49] like, a whole, we don't, I think there's more
+[49:51] but personal opinion.
+[49:52] I think like, we probably don't need to reinvent
+[49:55] like a new communication system.
+[49:57] There are like, the agents are good at using the things to,
+[50:00] We have HTTP requests and flash tools and API keys and named PiUps and all of these things.
+[50:07] And so probably like the agents are just making HTTP requests back and forth on each other,
+[50:12] using HTTP server.
+[50:14] There's a bunch of interesting work there.
+[50:16] I've seen people make like a virtual forum for their agents to communicate and they
+[50:23] like most topics and like reply and stuff like that.
+[50:27] And kind of cool, I think there's a lot of things to explore and just cover there.
+[50:32] Okay, um, gonna keep going a little bit.
+[50:36] How are you doing for time?
+[50:37] Okay, it's got an hour left, I think.
+[50:39] Okay, um, cool.
+[50:42] So an example of designing an agent.
+[50:44] This is like, yeah, let's, this is not the prototyping session, but I think this is like,
+[50:50] we'll be a good sort of like, like, way into it.
+[50:54] Let's say we're making a spreadsheet agent.
+[50:57] What is the best way to search a spreadsheet?
+[50:59] What's the best way to execute code it?
+[51:01] Like, what's the best way to take action in a spreadsheet?
+[51:04] What is the best way to link the spreadsheet?
+[51:06] Right?
+[51:07] These are all like really interesting things to do.
+[51:08] I'm going to do like a fake mine, we can go over it.
+[51:13] Someone could grab a water as well, that would be great.
+[51:15] I could really use a water.
+[51:17] Okay.
+[51:18] Okay.
+[51:19] Thanks.
+[51:20] Okay, so we're going to, um, yeah, let's, let's, let's talk about the data.
+[51:27] Let's talk through it.
+[51:28] Uh, or what do you spend like a couple minutes yourselves thinking about this question?
+[51:32] You have a spreadsheet agent.
+[51:34] You want it to be able to search, you want it to be able to like, gather context, take action
+[51:39] verifies work, how would you think about it, right?
+[51:41] So like, just spend some time thinking through that.
+[51:44] Thanks a lot, there's something.
+[51:45] Okay.
+[51:46] Okay.
+[51:47] Okay.
+[51:48] Okay.
+[52:00] Listen to the things I have, say.
+[52:20] And the others?
+[52:52] Okay, is everyone good had a little bit of time to think about this today when we're
+[53:01] tired or what does dive into it?
+[53:05] Okay, what's the best way for an agent to search a spreadsheet?
+[53:09] We're loving to have to type with one hand down.
+[53:12] I should figure this out there because I'm moving to the type later.
+[53:18] Okay, the search engine is spreadsheet.
+[53:21] Any ideas?
+[53:22] How do you search a spreadsheet?
+[53:23] Like what would you do?
+[53:25] CSV.
+[53:26] Okay, you've got a CSV.
+[53:28] Okay, now like your agent wants to search a CSV.
+[53:32] What does it do?
+[53:33] Hey, grab a sentence.
+[53:35] Okay, one of the gruff look like all the headers.
+[53:39] Looks like the headers.
+[53:40] Okay.
+[53:41] There's all sheets.
+[53:42] Okay, great.
+[53:43] Yeah, and let's say I'm looking for the revenue in 2024 or something.
+[53:50] Yeah, now I've got my headers like I'm just going to blow up a spreadsheet, right?
+[53:57] Let's say that the revenue is in, there's a revenue.
+[54:00] new column and then there's like a
+[54:22] okay so yeah let's say it's something like this right like how do I get revenue in
+[54:27] 2020 26 right so this is sort of like a
+[54:30] popular problem right like there is revenue here and there's also 2020
+[54:34] 26 here right so it's like a multi-dimensional stuff right we could look at
+[54:39] the headers that will then give us like if you just pull this to get 1203
+[54:45] hundred right so we need a little bit more any other ideas yeah
+[54:52] the best to afford the okay okay yeah and bull with the aqua
+[54:59] for yeah yeah that's a question right like what what are the
+[55:06] user looking for right they're probably looking for something like
+[55:08] revenue in 2020 six right if you use the API's new used the Google tools
+[55:15] and all the numbers together we'll build up some of the
+[55:19] yeah so the idea is like use the APIs like use the Google APIs to
+[55:23] like look it up that's great but yeah let's say we're working locally
+[55:27] we need to serve design in ZAPS yeah SQLite or that could be
+[55:31] comprehensive via directly and work to do it
+[55:34] oh interesting okay I don't know that that's great so yeah you use SQLite to
+[55:38] create a CSV that's a great like sort of creative way of thinking about
+[55:43] API interfaces right like if you can translate something into a interface
+[55:48] that the agent knows very well that's great right and so like if you have
+[55:53] a data source it you can convert into a SQL query then your agent really
+[55:58] knows how to search SQL right
+[56:00] So thinking of transformation stuff is really, really interesting.
+[56:03] It's a great way of designing an agentic searching phase.
+[56:05] So yeah, over there.
+[56:08] Try to remember that one too,
+[56:09] because you just can't see the results as well.
+[56:11] Yeah.
+[56:12] It's very good at ranking within the tool.
+[56:14] With this spawn spawn,
+[56:15] it's a start ranking, the right tool for the right job.
+[56:17] Because that's kind of what we're talking about here.
+[56:19] It's right tool for the right job.
+[56:20] Yeah, as Clouds, the spawn knows to rank the right tool for the job.
+[56:24] Yeah, if you prompt it, you know, like,
+[56:26] or like, I think this one of those things
+[56:27] we're like, I don't know.
+[56:28] Let's find out, like, let's read the transcript.
+[56:31] If it's not, like, how can you help it?
+[56:34] Yeah, just sort of like, I think all of these things
+[56:37] are like an intuition.
+[56:38] It's like, like, kind of like, writing a horse.
+[56:41] Not that I've ever wrote a horse, but I know.
+[56:43] Just like, I can't imagine.
+[56:49] Yeah, like, if you feel like, you're sort of giving these signals
+[56:53] to the horse or coming down and trying to,
+[56:55] and how do you push it faster?
+[56:58] You know, it made it sort of like, it's a very organic,
+[57:01] like thing, right?
+[57:03] I think we like to see that models are grow and not design,
+[57:07] right?
+[57:07] So we're like sort of understanding their capabilities.
+[57:10] Yeah.
+[57:11] Yeah, what, and where it is now.
+[57:13] The question, so is it where you're going to have
+[57:14] like a minute data to disperse, you get the search
+[57:16] and I think it didn't document.
+[57:18] Yeah, that's the example of a API.
+[57:20] Is that going to get idea?
+[57:23] To that build it, tell us just for us.
+[57:25] Yeah, so that's another great pattern is like,
+[57:27] okay, can you add metadata to its spreadsheet?
+[57:29] So these are some questions that you might want to think
+[57:32] about before, like, when you're thinking about search,
+[57:35] is like, what could we process and can you do
+[57:38] to make the search better?
+[57:39] Right?
+[57:40] And so one example is that you translate it into like a SQL format
+[57:44] or something where you do something that can query it, right?
+[57:46] That's like a translation step.
+[57:47] Another step is like maybe you have a tool
+[57:50] or like a preprocessing step or another agent
+[57:55] and it needs the spreadsheet and like adds information
+[57:59] so that the agent can.
+[58:00] that like search across that information better.
+[58:01] All right.
+[58:02] So yeah, one more.
+[58:05] I was curious.
+[58:06] What?
+[58:07] I mean, all those tools sound great.
+[58:09] But yeah, I can't the agent just
+[58:11] if you want was suggested, read the header
+[58:13] and then just get those dates.
+[58:15] Like I feel like that should be
+[58:17] to be a little further.
+[58:20] Read test.
+[58:21] Yeah, probably I should have like
+[58:22] prepared this in code.
+[58:24] But yeah, I built a ton of spreadsheet agents
+[58:27] before basically it's not worth it.
+[58:29] It's kind of hard to do.
+[58:30] Yeah.
+[58:30] And so basically what I would think about is like,
+[58:34] so we've got like, okay, I should be
+[58:38] suggested how can I code at the time time, right?
+[58:42] And just all the ways to access the header.
+[58:45] Oh, I see.
+[58:46] Yeah.
+[58:46] When you work it was before something.
+[58:48] Or.
+[58:49] So think of liking your shirt.
+[58:51] You're just a microphone button.
+[58:53] It was a microphone button on the back.
+[58:56] Stick the mic in your shirt.
+[58:58] No, I'm just don't trust that stuff.
+[59:01] Man, okay.
+[59:03] It's.
+[59:04] Yeah, we should be working in a nail-out
+[59:07] level.
+[59:08] Yeah.
+[59:09] Okay.
+[59:09] So let's see.
+[59:12] Thanks.
+[59:13] Someone all the way.
+[59:14] That's all.
+[59:15] Hold that.
+[59:16] Hold that.
+[59:17] Okay.
+[59:18] Like, search.
+[59:20] So one way to do it is like, you see
+[59:25] in spreadsheets, right?
+[59:26] Like, you can say here, you can design formulas, right?
+[59:30] So like, be three, two, three, four, three, four, four, four, four, four.
+[59:39] Right.
+[59:40] So this is the syntax for example, the agent's pretty familiar with,
+[59:43] like, be three to be five, right?
+[59:45] And so you can design an agetic search interface,
+[59:47] which is like this, right?
+[59:48] Like, be three, be five, for something, right?
+[59:52] So like, your agetic search interface can take in a range, right?
+[59:56] Take in a range string, right?
+[59:58] And these are things that like this.
+[60:00] H and O is pretty well, right? Like you can do SQL queries, right?
+[60:05] H and O is SQL queries pretty well, right?
+[60:08] And like these you can also do XML, right?
+[60:16] So I'm just so small.
+[60:21] Okay. You can also do XML.
+[60:24] I'm not sure if you have no but like XLX files are XML in the back end, right?
+[60:29] And XML is very structured.
+[60:31] You can do like an XML search query and third different libraries.
+[60:35] I can do that. So that's one example, right?
+[60:37] Is like how do you search and gather context?
+[60:39] And I hope this sort of like illustrates you that like gather context is really, really creative, right?
+[60:44] Like and like there's so many iterations.
+[60:46] If you just if you only tried one iteration,
+[60:49] it's probably not enough, right?
+[60:51] Like think about like as many different ways as you can,
+[60:53] like try these out, right?
+[60:55] Like try SQL, try try the search, try the graphic and knock
+[60:58] and like all of these things and how low-fuel cast they were trying
+[61:02] across different things and see what the age of likes and what it doesn't like.
+[61:06] It's going to be different for each case.
+[61:08] All right. Yeah.
+[61:09] You want to say it's an interesting part in the story.
+[61:12] There's a lot that model or there's a little bit of an ancient here.
+[61:17] Yeah.
+[61:18] And you're right about it.
+[61:19] But it needs to be existing in all that you're doing.
+[61:22] So who's doing that from all of the truth?
+[61:25] Yeah.
+[61:26] So the question is like, where is the knowledge come from?
+[61:29] Is it the model?
+[61:30] Is it like what is it what do I mean by the agent?
+[61:32] Yeah. Generally, what I think what you're looking for is like you have a problem.
+[61:36] You want to make it as a distribution as possible for the agent, right?
+[61:40] And so the agent knows a lot about a lot of different things.
+[61:43] It knows a lot about for example finance, right?
+[61:45] So if you ask it to make a DCS model,
+[61:48] it knows what DCF is, right?
+[61:51] And if you want to give a more information, you can make a skill, right?
+[61:55] But so it's okay.
+[61:56] No, the DCF is.
+[61:57] It knows what SQL is.
+[61:58] Can it combine those things?
+[62:00] together. And so ideally, you're probably going to be out of distribution in some way.
+[62:08] There's some kid formation that's not on the internet or something that you have or something.
+[62:14] It's somewhat unique to you. And you want to try and massage it to be in distribution as possible.
+[62:20] And yeah, it's very, very creative. I think like, you know, it's not like a, it's not a science to be able to have very much like an art.
+[62:33] Yeah, okay. So we've tried gathering context than taking action. We can probably do a lot of the same stuff here that we've done before, right?
+[62:43] Like we can do like insert to the array, right? If you've got like a sequel interface, right? We can do a sequel career.
+[62:57] We can edit XML. These are like often very similar, right? Like taking action and gather context that you probably want a similar API back and forth.
+[63:06] And then the last thing is verifying work, right? Like how do you think about how do you think about that?
+[63:12] Check for null pointers, right? Is one of the ways to do it? Any other ideas on verification or yep?
+[63:23] Sorry, I'm a bit confused. I can say.
+[63:28] Like when you're using other SDKs to build a agent, I don't need to tell it how it should gather the context. I just give it the context and explain. This is what's like, like, playing and playing English. What does meant to do?
+[63:42] And what I tend to do and you tell me if I'm wrong, I actually end up creating a separate agent for QA.
+[63:50] To verify, because I don't trust the agent to verify itself.
+[63:56] I'm just, I'm just, I'm just, I'm gonna continue.
+[64:00] about the level of detail I need to provide the agents in that example.
+[64:03] Yeah, so the question is about
+[64:06] do you think context of the agent versus having a gathering of own context?
+[64:11] You mentioned that you sometimes use a Q&A agent.
+[64:14] I can ask like what like domain you're a billionaire agent or
+[64:18] cyber security.
+[64:21] Okay, sure, yeah.
+[64:23] Um, I think that I think I need to like look into more specifics, but the
+[64:30] cloud agent SDK is great for cybersecurity and like I would generally push
+[64:34] people on like let the agent gather context as much as possible.
+[64:39] You know, like let it find its own work as much as possible.
+[64:42] Um, you're trying to give it the tools to find it.
+[64:45] So work the way I think about this is kind of like let's say they someone locked you in a room
+[64:50] and they were like giving you tasks.
+[64:52] You know, like so that's what you're right your job.
+[64:54] Well, like a Mr. Beast sort of like scenario, right?
+[64:58] Like you get five grams of other dollars if you stay in this room for six months.
+[65:01] Um, then like, like someone's giving you a message.
+[65:05] What tools would you want to be able to do it, right?
+[65:07] Like would you just want like a list of papers or like would you want to calculate
+[65:13] her or like a computer, right?
+[65:15] Or probably I would want to compute it, right?
+[65:17] I'd want Google, I'd want like all of these things, right?
+[65:20] And so like I wouldn't want the person to send me like a stack of papers.
+[65:24] Like, hey, this is probably all the information you need.
+[65:26] I'd rather just be like, hey, just give me a computer, give me the problem.
+[65:29] Let me search it and figure it out, right?
+[65:31] And so that's how I think about agents as well.
+[65:33] Like they need like like, you know, they're stuck in a room.
+[65:37] How you to give them tools?
+[65:38] So if you can go back to the slide you have to the grab you have to the grass.
+[65:45] Like let's do vinar.
+[65:46] Yeah, that's not good.
+[65:47] So basically that guy that in contacts is basically these are the two ones I'm offering.
+[65:52] Yeah, exactly.
+[65:53] Yeah, you're I'm giving it like maybe an API for cogeneration, maybe I'm using the SQL
+[65:58] Google tool, maybe I'm using it.
+[66:00] I mean, a batch, these are all like examples, right?
+[66:02] So, yeah.
+[66:03] They will question.
+[66:04] So, uh, they answer your, uh,
+[66:07] and then the certain state.
+[66:08] Yeah.
+[66:09] They answer the state,
+[66:10] the fact that one is going to,
+[66:11] and what's inside the other side.
+[66:13] Interesting.
+[66:14] Yeah.
+[66:14] So, do we actually share the context for you?
+[66:16] I think this is like an interesting question
+[66:18] is overall about how you manage context.
+[66:20] I think, and I haven't talked about this too much
+[66:22] about subagents are like a very, very important way
+[66:26] of managing context.
+[66:28] Um,
+[66:29] I think that this is like,
+[66:30] we're using more and more some agents inside of Cloud Code.
+[66:34] And I would think about like doing subagents very generally.
+[66:38] So, like, what we might do for this by cheat agent
+[66:41] is maybe we have a search subagent, right?
+[66:44] So, like, subagents are great for when you need to do a lot of work
+[66:48] and return an answer to the main agent.
+[66:50] So, for search, let's say the question is like,
+[66:53] how do I find my revenue in 2020, six?
+[66:55] Maybe you need to do a bunch of results.
+[66:57] Maybe you need to like search the internet,
+[66:59] maybe you need search spreadsheet, things like that.
+[67:01] And there's a bunch of things that don't need to go into the context
+[67:04] of the main agent.
+[67:05] The main agent just needs to see the follow results, right?
+[67:09] And so, that's a great subagent task.
+[67:12] I don't have the dedicated subagents like here,
+[67:14] but like, yeah, they're very, very useful.
+[67:16] And I think a great way to think about things.
+[67:18] Um, yeah, just to build on that question.
+[67:22] Yeah.
+[67:22] Actually, for verification, for example,
+[67:25] you can imagine doing a separate skill or subagent.
+[67:27] You might even want to have an adversarial security example.
+[67:31] So, great way.
+[67:32] I want to have really go to town on it
+[67:33] and not really have an sympathetic relationship
+[67:36] with the work already done.
+[67:38] So, I get to spectrum, but do you like,
+[67:41] are you saying yes you do some subagent here?
+[67:43] You do some skill.
+[67:44] How would you think about this?
+[67:45] Yeah, definitely.
+[67:46] So, question on like, do subagents or natural work?
+[67:50] Does it make sure?
+[67:51] I'm sure.
+[67:52] Okay.
+[67:53] Thank you, Regent.
+[67:56] Okay, yeah.
+[67:57] Can you submit an insurgent verification?
+[67:59] I mean.
+[68:00] Yes, I think this is a pattern.
+[68:01] I think like ideally the best form of verification is rule based.
+[68:07] Right?
+[68:07] You're like, is there like a null pointer or something?
+[68:10] That's like easy verification.
+[68:12] Because it lived or compiled, like as many rules as you can
+[68:17] try to insert them and again be creative.
+[68:19] Right?
+[68:19] Like for example, in Cloud Code, if the agent tries to write
+[68:23] to a file that we had, no, it hasn't read yet.
+[68:26] Like we haven't seen it enter the read cache.
+[68:29] We throw it in error.
+[68:31] We tell it like, hey, you have a read this file
+[68:34] and try reading it first.
+[68:36] And that's an example of deterministic tool
+[68:39] that we insert into the verification step.
+[68:42] And so as much as possible, any time you
+[68:44] are thinking about verification, first step
+[68:47] is like what can you do deterministically?
+[68:49] What like how quits can you do?
+[68:52] And again, when you're choosing which types of agents
+[68:56] to make, the agents that have more deterministic rules
+[68:59] are better.
+[69:00] Like they just like, it just makes a lot of sense.
+[69:04] So of course, as the models get better and better,
+[69:07] reasoning, then you can have these sub agents
+[69:09] that check the work of the main agent.
+[69:11] The main thing there is to avoid context pollution.
+[69:15] So you probably wouldn't want to like for the context.
+[69:18] You probably want to start a new context session
+[69:20] and just be like, hey, yeah, adversarily check the work of this
+[69:26] output was made by a junior analyst at McKinsey
+[69:29] or something.
+[69:30] They graduated from like not a grade school,
+[69:33] like you're just like, you know, like just like
+[69:36] feed it a bunch of stuff and then tell it to critique it.
+[69:39] Like that's like one of the tools of this on page end.
+[69:42] And so yeah, the more you like, yeah, that's
+[69:47] to all to get better and better,
+[69:47] and that's sort of the verification of the combat
+[69:49] or it as well.
+[69:50] But doing it deterministically is like a grade start.
+[69:55] Yeah, well, that's not.
+[69:56] You just a question about the very framework.
+[69:59] So yeah.
+[70:00] So, let's say we found no pointers, it's probably easy to just stay up and fix it.
+[70:08] But like, you know, let's say we can put the production in the client, so you know, that's not a set.
+[70:14] Based on how get into a spot where the whole stretch is deleted.
+[70:18] And so like, like, on what level, we need to bake in like a relative like, let's do,
+[70:24] there's like, let's say the QA agent, retiree that their spreadsheet is at FD.
+[70:32] Yeah.
+[70:33] Not necessarily able to do it before.
+[70:35] So like, what was your advice there?
+[70:37] Yeah, so the question is like, how do you think about state and like undoing and redoing,
+[70:42] be able to fix errors basically, right?
+[70:46] I think this is like a really good question, and honestly,
+[70:49] another sort of like, like, when you think about like, what are agents good at, right?
+[70:57] Like, or what problem domains are agents good at, how reversible is the work is like a really good intuition, right?
+[71:04] So code is quite reversible.
+[71:06] You can just like go back and undo the get history.
+[71:09] We come with like, you know, these atomic operations right out of the gate, right?
+[71:13] Like, I use get constantly through cloud code.
+[71:16] I don't type cake management more, right?
+[71:18] That's like a really good example.
+[71:20] A really bad example is computer use, you know, because computer use has is not reversible in state, right?
+[71:27] Like, let's say you go to like, doordash.com and you add like the user wants you to order a code.
+[71:33] Can you add a order a Pepsi?
+[71:35] Now, like you can't just go back and click on the code, you have to like go to the cart and you have to remove the Pepsi, right?
+[71:42] And so your mistake is like compounded this like, you know, this state and the state machine has got more complex, right?
+[71:49] And so like, whenever you're dealing with like very, very complex state machines,
+[71:53] that you can't undo or redo of, it does become harder, right?
+[71:57] And I think one of the questions for you as an engineer is like, can you?
+[72:00] turn this into a reversible state machine kind of like you said,
+[72:03] can you store state between checkpoints such that the user can be like,
+[72:07] oh, my spreadsheet is messed up right now.
+[72:09] Just go back to the previous checkpoint, right?
+[72:12] Potentially even can then model go back to previous checkpoints.
+[72:16] I think someone had this like time travel tool that they were giving
+[72:20] one of the coding agents, which was kind of cool where you're like,
+[72:22] it's like you can time travel back to a point before this happened.
+[72:27] Do you know what I mean? It's kind of funny.
+[72:29] I think like all of these tools, some of them don't work that well yet, but you know,
+[72:33] what we'll get there. We have thinking about state verification is very useful, right?
+[72:41] Yeah, could you question it back?
+[72:43] Yeah, kind of curious about scale.
+[72:49] So what I'd just appreciate is like millions of roads, billions of thousands of
+[72:53] thousands of columns, right? Or just like any sort of database like in that
+[72:58] type of situation, how would you code and how searching is there obviously a context
+[73:03] button? Yeah, I'm good calling it more.
+[73:06] Yeah, this is great. I probably should have done this spreadsheet example as my coding example.
+[73:11] For a preview, my coding like agent is a Pokemon agent.
+[73:16] Probably spreadsheet would have been better.
+[73:18] Okay. The question was, what if this spreadsheet is very big?
+[73:22] If you have a million rows, how do you think about 100 columns?
+[73:27] 100 columns? 100 columns or 100 columns or whatever?
+[73:30] How do you think about it?
+[73:31] Your database is also very big. How do you do that?
+[73:35] I think for all of these things, one, of course, is the data becomes larger and larger.
+[73:41] It's just a harder problem. It just absolutely is your accuracy will go down, right?
+[73:45] Like, code is worse than to larger code bases than it is in smaller databases, right?
+[73:50] And as a model gets better, they will get better at all of that.
+[73:53] For all of these, I would think about how would I do this.
+[73:57] If I had a spreadsheet that was like a million columns.
+[74:00] All of them's in a million rows.
+[74:01] What would I do?
+[74:02] I mean, I would need to start searching for it, right?
+[74:04] I would need to be like, if I'm searching for revenue,
+[74:07] I'd be like searching control f, revenue,
+[74:09] and then I go check each of these results.
+[74:12] And I'd be like, is this right?
+[74:14] And then I'd see like, is there a number here?
+[74:17] And then I'd probably keep a scratch pad,
+[74:19] like a new sheet where I'm like,
+[74:21] hey, equals revenue, equals this, you know,
+[74:25] and store this reference and keep going.
+[74:28] So I think that's a good way
+[74:29] if they came out of it is like,
+[74:30] the model should never like read the entire spreadsheet
+[74:34] into context because it would take you much, right?
+[74:36] Like, you want to give it like the starting amount of context.
+[74:41] And it's also how you work, right?
+[74:42] Like, let's say that you open up the spreadsheet.
+[74:44] What you see is rows, is this, right?
+[74:46] You see like the first can rows and the first,
+[74:50] like, you know, 20, 30 columns or something, right?
+[74:53] That's what you see.
+[74:53] You don't load all of it into context right away.
+[74:56] You probably have an intuition for like,
+[74:57] I should load more of this into context, right?
+[75:01] And like, oh, I should navigate to this other sheet,
+[75:04] right, and this other sheet of more data, right?
+[75:07] But you need to like sort of you gather context yourself, right?
+[75:11] And so the agent can operate in the same way.
+[75:14] It can like navigate to these sheets,
+[75:16] read them like try, like keep a scratch pad,
+[75:19] keep some notes and keep going.
+[75:20] So that's what I would think about it.
+[75:23] Yeah, the back.
+[75:24] Yeah, so my question is about managing context.
+[75:26] I think a lot of times when I talk to people who are using
+[75:28] a lot of content, because you know,
+[75:29] you know, you know, you know,
+[75:30] I'm going to get a question,
+[75:32] but you know, I'm going to get a question.
+[75:34] I'm going to get a question.
+[75:36] And actually, I guess, the latest question.
+[75:38] Do you have a rule of thumb for, you know,
+[75:41] what fraction of the context went to be used before you start
+[75:44] in a chemistry recurrence or specific of those affected?
+[75:47] Yeah.
+[75:48] The question is, yeah, context management,
+[75:50] do you have a rule of thumb for like,
+[75:52] how much of the context went to use before it comes less effective?
+[75:55] And when I talk to people who are using cloud code,
+[75:57] they're like, I'm on my physical.
+[76:00] I'm like, what?
+[76:01] I like almost never done a compact before.
+[76:06] I have to test the UX myself by forcing myself
+[76:10] to get compacted.
+[76:12] Just because I tend to clear the context
+[76:14] window very often when I'm using Cloud Code myself,
+[76:20] at least in code the state is in the files of the code base.
+[76:25] So let's say that I made some changes.
+[76:27] Cloud Code can just look at my get-diff.
+[76:29] And be like, oh hey, these are the changes you made.
+[76:32] It doesn't need to know my entire chat history with it,
+[76:36] in order to continue a new task.
+[76:38] And so in Cloud Code, I clear the context very, very often.
+[76:41] And I'm like, hey, look at my outstanding get changes.
+[76:44] I'm working on this.
+[76:46] Can you help me extend it in this way?
+[76:48] That's a way of thinking about it.
+[76:50] And when you're building your own agent,
+[76:53] let's say we're building a spreadsheet agent,
+[76:55] it gets a little bit more complex,
+[76:56] because your users are less technical.
+[76:58] And they don't know what a context window is, right?
+[77:01] That is like, I'd say a hard problem.
+[77:04] I think there's like some UX design there.
+[77:06] Like, can you reset the conversation stage, right?
+[77:09] Like, can you maybe every time
+[77:12] the user asks a new question,
+[77:13] can you do your own compact or something?
+[77:15] And can you like summarize the context?
+[77:19] Does it like in a spreadsheet?
+[77:21] A lot of the state is in the spreadsheet itself.
+[77:23] So it probably doesn't need to know the entire context.
+[77:27] Can you store user preferences as it goes
+[77:31] so that you remember some of this stuff?
+[77:33] There's a lot of like, again, it's an art.
+[77:35] There are so many different angles and ways
+[77:37] in which you can do this, right?
+[77:40] But yeah, you are trying to minimize context usage.
+[77:44] You probably don't need a lot of million context or something.
+[77:47] I mean, you just need good context management,
+[77:49] like UX design.
+[77:53] Just like I just wanted to ask,
+[77:54] the sub-A.T.S. for many super tech advantage of the poor age.
+[77:59] That's right, yeah, sub-A.T.S.
+[78:00] We're making a discussion about the vehicles that use multiple subagents and try to make a process
+[78:04] so we chunk up this registry in the case where it's super large so then the agent's going to kind of run through each portion
+[78:09] like in parallel with each other.
+[78:10] Yeah, yeah, I mean, yeah, so like, what are the things I love about Cloud Code?
+[78:16] Is that we are like the best experience for using subagents, like especially subagents with batch.
+[78:22] It is very, very good. I didn't quite realize all the pain.
+[78:27] I think if anyone's going to queue, I believe Adam Wolfe is giving a talk on Q-Con about how we did the
+[78:32] bash tool, Adams, alleged, and the bash tool. It's such a good job.
+[78:37] When you're running parallel subagents at the same time, bash becomes very complex and there are lots of
+[78:44] like race conditions and stuff like that and then so there's a lot of work that we saw there,
+[78:48] right? So this is like one of the things I love about Cloud Code is you can just be like, hey,
+[78:52] like, spin up three subagents to do this task and we'll do that and in the agency case, well,
+[78:57] you can just ask it to do that. So number one, the subagents are great primitive in the agency
+[79:03] case and I haven't seen anyone do it as well. So that's like a big reason to use it.
+[79:07] Yes, generally you want to, you want the subagents to further context. Let's say you have
+[79:12] if you have a spreadsheet, you could potentially have multiple reads subagents going on at the same
+[79:15] time, right? So maybe the main agent is like, hey, can this agent read and summarize she won?
+[79:21] Can this agent read, what's similar she too? Can this agent, some of her she three? And then they
+[79:25] return their results and then they agent, maybe spins up more subagents again, right? So this is like another
+[79:33] knob you have and I think what I want to say is like,
+[79:38] there's like we've talked so many, so much about like all these different creative ways that you
+[79:42] could like do things. This is like the level that you should think about, should have to think about
+[79:49] you're not really in my opinion, think about like how, how do I spin off a process to make a
+[79:55] subagent or like, you know, like the system engineering between like.
+[80:00] But what is a compact or something?
+[80:02] So we take care of all of this for you and the harness
+[80:05] so that you can think about what sub agents do
+[80:08] any dispinatov, right?
+[80:09] And how do I create a agendic search interface?
+[80:12] And how do I verify this work?
+[80:14] These are really core and hard problems
+[80:16] that you have to solve.
+[80:17] And anytime we spend not solving these problems
+[80:20] and solving lower level problems,
+[80:23] you're probably not the delivery value tier users.
+[80:25] And so yeah, I think sub agents
+[80:29] big fan of the agenistic subordinates.
+[80:32] Yeah, yeah, grow some.
+[80:34] So like we have this third action and the verification tab.
+[80:39] So we're exactly we need to put the rest because in this example,
+[80:42] I let say after generation of the external query,
+[80:45] I can verify it is the right query,
+[80:48] the net data not that is the one but second part is like
+[80:51] generation the query,
+[80:53] that actually executing and once I will get to that,
+[80:56] then I will add with a verification.
+[80:58] So how it can do in dynamically like you're meeting
+[81:02] on the right but.
+[81:04] Yeah, so the question is like where do you do verification?
+[81:07] Is it only at the end you do it in the middle?
+[81:09] Like things like that.
+[81:10] I would say like everywhere you can just like constantly
+[81:13] verification, right?
+[81:14] Like it's a redo sub verification is a read step
+[81:17] of the outcome code, right?
+[81:19] So that's like a great example.
+[81:22] You can do it at the end, you should absolutely do it
+[81:24] at the end but at any other point,
+[81:26] if you have rules or heuristics especially like if,
+[81:30] for example, you're like hey, what are my rules
+[81:31] that that you shouldn't do like the total number of columns
+[81:35] you should search is should be under 10,000 or under 1,000
+[81:39] or something that's like a nice way of doing it.
+[81:41] Like similarly here like maybe you should have been
+[81:44] surfing like a huge like row like a values like
+[81:48] defeat back to the model, be like hey, chunk this up, right?
+[81:50] You throw an error and give a feedback
+[81:52] and the great thing about the model is like
+[81:53] you listen to feedback, it will read the error outputs, right?
+[81:56] And then it will just keep going.
+[81:57] So yeah verification is definitely like I, I,
+[82:00] I like how to have it in this, like, as a sort of a loop, but it's definitely more verification
+[82:08] can happen anywhere, and should happen anywhere.
+[82:11] Like, put it into many places you can.
+[82:14] So, all right, do you need to start doing some of the prototyping?
+[82:18] I'll take one more question.
+[82:19] So, right, right here.
+[82:20] Yeah.
+[82:21] How do you stay?
+[82:22] How do you call the steps?
+[82:23] How do you say the agent that goes to each post?
+[82:26] Yeah.
+[82:27] How does it loop actually step on the step on the step on the step on the other?
+[82:31] How do you get it?
+[82:32] How do you get it?
+[82:33] You just tell it.
+[82:34] So, like, uh...
+[82:35] Yeah, they're going to system wrong.
+[82:37] Yeah, they're system wrong.
+[82:38] Yeah, they're system wrong.
+[82:39] Yeah, so like with Conco, we just give it the master and we're like, hey, like, gather
+[82:41] context, read your files, do stuff, like run your LinkedIn, you know what I mean?
+[82:47] And so, yeah, again, with the agent, you don't need to enforce this, right?
+[82:50] You don't need to tell it.
+[82:51] Hey, like, you need to do this because, like, sometimes it might not be necessary, right?
+[82:56] Let's say that someone is asking a read-only question for your spreadsheet.
+[83:03] You don't need to like verify that, uh, like, you're, there are no compilers, right?
+[83:09] Because you haven't done any right errors, right?
+[83:11] Right?
+[83:12] Right?
+[83:13] So, um, let the agent be intelligent and, like, in the same way that you would like,
+[83:17] that same freedom when you're doing your work, right?
+[83:19] Uh, you're trapped in this box or whatever, like, same way, right?
+[83:23] Uh, so...
+[83:24] Okay, cool.
+[83:25] I, I, I do want to try and see if I can do some prototyping now that we have this, uh, uh,
+[83:31] the, the holder as well.
+[83:33] Um, okay.
+[83:35] Yeah, execute it later.
+[83:36] We've done a bunch of truth today.
+[83:37] Okay.
+[83:38] Prototyping.
+[83:39] Okay.
+[83:40] Let's say that you have an agent, right?
+[83:42] Like, you want, you want to build an agent.
+[83:44] You come out of this dog and you're like, great.
+[83:45] I have a bunch of ideas.
+[83:47] How, how do I do this?
+[83:48] Um, I think what I say overall is like, building an agent should be simple,
+[83:54] your agent at the end should be simple, but simple is not the same as easy, right?
+[83:59] So like, it should be very...
+[84:00] be simple to get started and it is just go to cloud code.
+[84:04] Give cloud code some scripts and libraries and
+[84:08] a constant cloud that I'd be that I ask it to do with it.
+[84:10] That's what we're going to do.
+[84:14] That's like it should be so easy to be like, hey,
+[84:16] this is my API.
+[84:17] This is like an API key.
+[84:19] Can you go search like, you know,
+[84:23] not like my customer support tickets or something
+[84:26] and organize and buy priority or something like that, right?
+[84:29] And then look at what cloud code does and iterate on it, right?
+[84:32] And this is like a great way of like just
+[84:35] scooping to like the hard domain specific problems that you have.
+[84:40] So you have a lot of like domain problems,
+[84:42] like how do you organize your data, your agenda,
+[84:44] exert, how do you like great guard retels on your database?
+[84:48] These are all questions that you can just start solving
+[84:49] right away with cloud code, right?
+[84:51] And so trying like build something that feels pretty good with cloud code.
+[84:56] And I think generally what I've seen is that you can do this
+[84:59] and get really good results just out of the night using cloud code locally,
+[85:02] right?
+[85:02] And you should have high conviction by the end of it, right?
+[85:06] And so yeah, I think like,
+[85:10] and I've forgotten this.
+[85:12] The more info, what's my internet talk?
+[85:15] This is like a deck for internal that we're using.
+[85:19] Okay, so yeah, I'm going to be inserting this.
+[85:23] So yeah, you're getting what we're going to show customers, right?
+[85:26] So okay, yeah, so yeah, use cloud code.
+[85:32] Again, simple, but simple is not easy, right?
+[85:36] So like the amount of code in your agent should not be like super large.
+[85:40] Doesn't need to be huge, doesn't need to be extremely complex,
+[85:43] but it does need to be elegant.
+[85:46] It needs to be like what the model wants.
+[85:48] You want to have this interesting insight.
+[85:50] Let's turn the model into a SQL query.
+[85:52] Oh, I just turned this spreadsheet into a SQL query
+[85:54] and I go from there, right?
+[85:55] So think about that when call code is like a great way of doing that.
+[86:00] So, okay, let's make a Pokemon agent, right?
+[86:03] This is what we're gonna do.
+[86:04] Pokemon is we game with a lot of information.
+[86:07] There are thousands of Pokemon,
+[86:08] each of the kind of moves.
+[86:12] We want to be pretty general,
+[86:13] and so there is actually a Pokemon key API.
+[86:17] And the reason I chose Pokemon is just
+[86:18] because I know that you guys have your own APIs as well,
+[86:21] and they're all very unique, right?
+[86:23] And so I wanted to choose something
+[86:25] with the kind of complex API that they haven't tried before.
+[86:28] So, the Pokemon API has like,
+[86:30] you can search up Pokemon like Ditto,
+[86:34] you can search up items and things like that.
+[86:38] And so it's got this custom API,
+[86:41] you've got everything in the game, right?
+[86:46] And yeah, one of the questions
+[86:49] your agent might want,
+[86:50] your user might want to do with make a Pokemon team, right?
+[86:53] I love Pokemon, I know very little
+[86:55] about making an interesting Pokemon team
+[86:57] for competitive play, could my agent help me with that?
+[87:00] That'd be cool, right?
+[87:01] So, my goal is to make an agent that can chat about Pokemon
+[87:07] and then we will see what we can do, right?
+[87:10] And how far we get.
+[87:12] So, I don't like some of this work already,
+[87:15] and I will open up and show you.
+[87:18] So, the first step, and the prompt here is like,
+[87:24] the first step is I'm gonna do mostly code generation for this, right?
+[87:28] And so, let me see, I'll get off somewhere.
+[87:34] It actually is, yeah, so I'm my personal GitHub.
+[87:40] Oh yeah, it's going to commit all of this as well.
+[87:43] Yeah, yeah, yeah, so I think my personal GitHub is,
+[87:49] let's see, all right?
+[87:51] You have to secure a GitHub or doesn't come out where it is.
+[87:54] You guys are AI engineer, it's not like if you can get all of them
+[87:58] that can let's do your appalled.
+[88:00] Yeah, you can clump this through like, and it took for the last changes.
+[88:11] Okay, so yeah, can you actually this, should I put in Dark Mode instead or is this fine?
+[88:17] Like, Dark Mode actually.
+[88:21] Okay, this is better.
+[88:31] No, I don't know.
+[88:36] I don't know who's been, but, okay, how does this work?
+[88:47] Okay, so here's an example of like, I was taken, the prompt I gave it was, hey, go search
+[89:00] Poké API for it's API and create a TypeScript library, right?
+[89:04] And so this is all of I've coded, and so you can see here that it's created this like interface for Pokemon, right?
+[89:11] And so it's created like this Pokemon API, I can get by name, I can list Pokemon, I can get all Pokemon, I can get species and abilities and stuff like that.
+[89:22] And so like this is just a prompt that I gave it right in January and this like TypeScript API, also been it for moves.
+[89:29] And then it's created this like, it's created this like API that I've new import Pokemon API, right?
+[89:38] From the Pokemon API, it's a K and you can see like sort of how it's like set this up.
+[89:45] And now in contrast to right, and so this is the cloud.
+[89:50] And be right, this is the TypeScript SDK from the Pokemon API.
+[89:54] This is like the modules in the Pokemon API, here's some of the key features.
+[90:00] I'm asking it to write scripts in the examples directory and then it will execute those scripts to help me with my queries.
+[90:09] I give it some example scripts. It doesn't always need all this information, right?
+[90:14] Like, but yeah, fetching Pokemon and listing the resources and getting data in some of that.
+[90:19] So this is like my agent really, it's like prompt I gave it to generate a TypeScript library and then this cloud.
+[90:26] And I can chat with it in cloud code. I'll also show you a version of it that is just tools, right?
+[90:33] So here I'm using the messages completion API, right?
+[90:37] And I've given it a bunch of tools from API. So like, get Pokemon, get Pokemon, get PC's, get Pokemon ability, get Pokemon, Thai, get Moo.
+[90:46] So you define all these tools and you can see that like, you know, I also just gave it a prompt and told it to make the tools.
+[90:53] It doesn't want to make a hundred tools, right? Like there's a ton of small gun, never sorry, Pokemon API data.
+[91:01] But like, you know, there's only so many parameters you can do.
+[91:06] So it's got this like tool call and now, and I made like a little chat interface with it, right?
+[91:13] So let me now go here and say like, this is my tool calling.
+[91:20] Hopefully did I miss it?
+[91:27] Great. So yeah, here we've got this chat.ts, right?
+[91:35] I use bond when I'm prototyping stuff just because like, I don't want to compile some types of
+[91:42] content, I don't want to make it.
+[91:52] So I'm going to start this like, bond chat and then I'm going to try like, okay, what are we going to do?
+[92:00] the generation to water Pokemon.
+[92:07] And you'll see that it's starting to like search.
+[92:10] And I'm logging all the tool calls here.
+[92:12] This is very, very important, right,
+[92:13] because like it needs to like do the tool calls.
+[92:16] And so you can see that what it's doing
+[92:17] is like it's searching a bunch of Pokemon.
+[92:21] And then it will be okay,
+[92:23] here are the water Pokemon for Gen 2, right?
+[92:25] It's a total dial, crock and off, for alligator.
+[92:28] Do you can see sort of like how it's stopped,
+[92:30] like in between each step it's thinking through
+[92:34] the previous steps, right?
+[92:36] Now like let's say that I want to do with clock code,
+[92:41] I think I may need to read it to delete this example.
+[92:47] Oh yeah.
+[92:48] Oh yeah.
+[92:49] It's not question, how do you log the tool calls?
+[92:53] I think it's just an argument.
+[92:55] Oh yeah, this is,
+[92:57] this is like in the normal API, right?
+[93:00] So I just like in the model every time it logs in,
+[93:04] I just call this.
+[93:06] This is in the like normal anthropic API.
+[93:10] In the SDK, I'll get back to the SDK.
+[93:14] It's just like you just log every system message.
+[93:16] So it's doing cops a lot.
+[93:19] Does that make sense?
+[93:20] Or, yeah.
+[93:22] Yeah, yeah.
+[93:23] So that's how I faced your showing.
+[93:24] Yeah, that just used the regular data API.
+[93:26] Yeah, that's using the regular API.
+[93:27] For that API.
+[93:28] Not the agency data.
+[93:29] Yeah.
+[93:30] And so what I'm going to do here is,
+[93:33] here I'm going to delete this glitch.
+[93:36] It's kind of this, and I want it to cheat.
+[93:40] But okay, so here you know that I'm just opening
+[93:44] clock code.
+[93:45] I've created a bunch of files here.
+[93:47] I'm going to say like, can you tell me all the generation
+[93:50] to water gopupon?
+[93:53] And then we'll see what it can do, right?
+[93:54] So I forget if I need to comp to draw it,
+[93:58] it's just something I think I'll be fine.
+[94:00] What's your name?
+[94:01] Do you mind going to the core of the 15 file and just showing,
+[94:04] you talked about the name contact and then action and then verification?
+[94:08] And you show that in the code and how we're contributing the tool description.
+[94:13] Yeah, so we haven't done the SDK part yet.
+[94:17] So so far I'm just putting some APIs in Cloud Code.
+[94:23] Yeah, yeah, yeah.
+[94:23] Sorry, I thought I missed that.
+[94:24] No, no, yeah, yeah, yeah, yeah, yeah.
+[94:27] But yeah, so okay, you can see here, it's given me a lot more, right?
+[94:33] And it's given me a lot more.
+[94:41] So it's saying there's 21.
+[94:43] Oh, my.
+[94:44] Right?
+[94:44] And I think this is roughly right.
+[94:46] I like, um, I think it just, no, it's actually.
+[94:56] I've done this.
+[94:58] Um, anyways, uh, yeah, we're going to slightly industry, which is, which is, I guess.
+[95:11] Good.
+[95:12] Um, but yeah, so like, what it will do is like, it will try and like write like a script
+[95:18] and because you don't want it to think as much, right?
+[95:22] So here it's like, okay, what I'm going to do is, um,
+[95:26] let's see, gen 2, what I have for my, yeah, present.
+[95:33] Okay, so yeah, you can see here, it knows like, okay, the start of the generations.
+[95:39] It fetches these, uh, for API.
+[95:42] Um, I guess this is decided not to use like my prevalued API here.
+[95:47] Um, and then, uh, yeah, and then runs it, right?
+[95:51] So, um, I think I need to like improve the Cloud.
+[95:54] I don't need to this, but anyways, you can see that like, it's able to like, check.
+[96:00] 200 plus Pokemon and then check for their type and you know,
+[96:04] get their information, right?
+[96:05] So this is like just a quick example on like how to do
+[96:09] code gen and how to use Cloud code to do it, right?
+[96:12] So we'll run this group and then like keep going, right?
+[96:19] So it will be me down.
+[96:22] And yeah, basically what I want to show, let's see,
+[96:27] we have roughly 15 minutes left.
+[96:31] Just have a play Pokemon.
+[96:35] Yeah, actually this is one of the demos I was thinking of doing.
+[96:39] Cloud code play Pokemon.
+[96:40] So let's say you want to do like an agetic version of Cloud
+[96:44] play Pokemon, how do you do it?
+[96:48] What you would do, I think, is like you would give it access
+[96:50] to the internal memory of the wrong, right?
+[96:55] And so let's say it wanted to find it's party.
+[96:58] It could search that in memory and Pokemon
+[97:00] red is like a very well-indistribution reverse engineered
+[97:05] game, right?
+[97:06] And so it could search in memory to be like, hey,
+[97:08] these are the Pokemon.
+[97:10] These are like this is how I figure out where the map is
+[97:13] and how I navigate it.
+[97:15] So this is like maybe actually actually to the reader
+[97:17] if you want to try it out and it's like there is like a Node.js
+[97:21] GBA andulator.
+[97:24] I think I'm so legally said you have to go buy Pokemon
+[97:26] red and try it.
+[97:28] But yeah, I think like, yeah, I'm going to example.
+[97:32] Anyways, here.
+[97:33] So it's fetched all of them and it flistened all their types.
+[97:36] And yeah, you can see how it's used code generation
+[97:40] to do this, right?
+[97:40] So a quick example of using Cloud code to prototype this.
+[97:45] Now there can be like more interesting data here.
+[97:49] So I do want to leave time for example.
+[97:53] So I think I'll just sort of like her questions.
+[97:55] So I'll just sort of go through like an example.
+[97:59] Well, let's see what you're making.
+[98:00] competitive Pokemon.
+[98:00] Competit Pokemon has a lot of different variables
+[98:02] and they get up.
+[98:03] This is a text file from this online library,
+[98:11] basically, which stores all of the Pokemon
+[98:14] and who they work well with and don't work well with.
+[98:21] Who they're countered by in all of these things.
+[98:24] So there's a ton of data here.
+[98:25] And it's all in text file, which is actually
+[98:29] pretty good for CloudCode, right?
+[98:30] Because I can say like, hey, I'm going to give it a little bit
+[98:34] more data normally, but this in the check the data folder,
+[98:39] tell me, I want to make a team around Venus store.
+[98:46] Can you give me some suggestions based on this mobile data?
+[98:53] And to what happens like this online, again.
+[98:55] And so I'm not entirely sure what little theory
+[98:58] having done this career before.
+[99:00] But we'll see, I think it'll be fine.
+[99:06] I think this is okay.
+[99:14] Yeah, but what I wanted to do is sort of grab through
+[99:18] this data, right?
+[99:19] And sort of figure out from itself, for first principles,
+[99:22] not having seen this data before, how can I like answer
+[99:25] my career?
+[99:26] So while it does that, I'll take any questions.
+[99:31] Yeah?
+[99:32] I have a small framework job.
+[99:34] So this is like, surely on CloudCode.
+[99:38] And so my question is, if we weren't
+[99:41] straightforward to discuss with the basic, yeah, for that.
+[99:43] Are we supposed to have CloudCode running in like
+[99:46] the length of swarm or, or, somehow,
+[99:49] apply CloudCode, CloudCode, part half, just as far
+[99:52] as you can, the HHSD.
+[99:55] So let me show you like very quickly, like what,
+[99:59] what it looks.
+[100:00] like to use the agent SDK here.
+[100:02] So I've already done this file system, right?
+[100:06] And again, I want you to think about the file system
+[100:08] as a way of doing context engineering.
+[100:10] Like this is like a lot of the inputs into the agent.
+[100:13] So my actual agent file is like $50.
+[100:17] And it's mostly just like random, like for the page,
+[100:20] right?
+[100:21] I guess, yes, decided to stop it from writing scripts
+[100:26] outside of the custom script directory.
+[100:29] So you can fully back go to it.
+[100:31] Yeah, you can see like it just runs this query.
+[100:33] It needs to be working directory.
+[100:36] And like runs it in a loop, right?
+[100:40] And so probably I'd want to like turn in some allowed tools
+[100:44] here and stuff.
+[100:45] But it's very simple.
+[100:46] And so if I were to like productionized this,
+[100:50] the first step I do is like, okay, I've tested it
+[100:53] on Cloud Cloud Code.
+[100:54] It seems to do pretty well.
+[100:56] I write this file.
+[100:57] Then I put it, there are two ways to do it.
+[100:59] So one is I do think that like local apps might
+[101:05] become a back with AI because I think that like
+[101:07] there's such an overhead to running it.
+[101:10] Like for example, Cloud Code is a front end app, right?
+[101:13] Like it works on your computer.
+[101:14] So maybe the way I ship this is a Pokemon app is like,
+[101:16] hey, I have like an app that you install and it works
+[101:19] locally on your computer and it's writing scripts.
+[101:21] I think that's one way of doing it, right?
+[101:24] In other way, yeah, you post it in the sandbox.
+[101:28] And again, there is a bunch of different sandbox providers
+[101:30] that make it really easy.
+[101:32] Like Cloudsler has a good example of using the Aginess
+[101:35] decay and it's just like sandbox.started, you know?
+[101:39] And then like bun agent.ts and that's kind of all it takes,
+[101:44] right?
+[101:44] Like they've extracted a way a lot of it.
+[101:47] So you run like the sandbox and then you communicate
+[101:51] with it.
+[101:52] And yeah, I think there is like,
+[101:54] so very interesting stuff that I'm not sure I had time
+[101:58] to get to, but.
+[102:00] Like, I think something interesting questions are like, yeah, like, how do you do this sort of like service?
+[102:08] Now we're just fitting up a sub, like a sandbox per user. There's a lot of like, I'd say best practices to solve here.
+[102:15] One thing I just want to call out for you guys to think about, if you're making an agent with the UI, like, let's say that you have, yeah, my Pokemon agent.
+[102:26] And I wanted to have an UI that is adaptable to the user, right? Like, maybe some users are doing team building, some users are helping you with their games, some users just want picture of the Pokemon, how would I have an agent that adapts in real time to my user, right?
+[102:41] The way I would do it is, in my sandbox, I would have a dev server, right? And the dev server would expose a port.
+[102:48] It would run on fun or notice something, it would expose a port. The agent could edit code and it would live refresh.
+[102:56] And your user would be interacting with that website. This is how a lot of like site builder is like, lovable and stuff work, right?
+[103:03] They use sandboxes and they sent post essentially a dev server. And so thinking about this for your user, if you want a customized interface, this is a great way to do it.
+[103:15] I can see what it did.
+[103:19] Okay, cool. Okay, so it's like written this script, it's generated, like, show me some base stats and suggested it, like a move set and some teammates.
+[103:39] And you can see sort of like, see what it did do.
+[103:46] Yeah, okay, so you can see if you're what it started doing is like it started searching for Venus or, right?
+[103:54] And it started finding those types, the, like those Pokemon.
+[104:00] And it does that, it also gets other Pokemon that mentioned Venus or so it gets like
+[104:04] its teammates and its counters and stuff right and it's sort of over this time found interesting
+[104:10] Pokemon right that like it might work with right so it's done a bunch of these searches
+[104:15] and it's got these profile, it's found those common teammates and written this script to
+[104:20] analyze it right and so this is all based on a tax file of course I could have pre-processed
+[104:24] of text file a little bit more but yeah it's like done this sort of like interesting
+[104:32] analysis for me and again I'll push up more code to the GitHub repo and also tweet about this
+[104:38] I'm onto it or I'm TIRQ to one two it to read a lot so definitely like mostly about agent
+[104:45] as you can so but you know have about 8 minutes last I want to spend the rest of time taking
+[104:50] questions about kind of anything you know and I'm sorry we didn't get to do more prototyping
+[104:57] yeah yeah so let's say it's a pod play in your sort of plug this in with that just the
+[105:02] C of the agent will be more selected with the team into the project yeah put in in
+[105:07] content play Pokemon yeah I do want to make content code play book when I think that'd be fun yeah
+[105:12] I think content play is Pokemon I think we try and keep it like I'm sure reasoning task much
+[105:16] possible yeah other questions yeah
+[105:38] yeah I do think overall especially right now agents are kind of pricing you know you mean
+[105:44] because like um the models are have just started to get agent take we really focus on like
+[105:50] having the most intelligent models you know and like you generally this is just like an overall
+[105:56] like SaaS business software thing you'd rather card
+[106:00] If you're a people more money that really have a hard problem, you know, and so I think this is still good.
+[106:04] Like you probably should find, you know, these hard use cases, but I would say like,
+[106:09] number one, make sure you're solving a problem that people want to pay for, right?
+[106:13] So it's like the number one step, right?
+[106:15] And then number two, yeah, I think you could do a subscription or token base.
+[106:20] I think this kind of comes down to like how much you spend people to use your product.
+[106:25] Versus like how much you expect them to like use it occasionally.
+[106:29] Like on code, I've seen people use a lot.
+[106:31] And in order to like, we do a mix of like, if we use a rate limits and if you exceed it,
+[106:37] we do usage based pricing.
+[106:39] I think that like, yeah, it's very like dependent on your own user based and kind of like what they will do.
+[106:46] But I will say monetization is something you should think about upfront and design your, you know,
+[106:53] agent around because it's hard to walk back these promises.
+[106:57] Yeah, back there.
+[106:59] I haven't already talked at all about sending me curious, do you know, you're thinking about
+[107:04] the code right there?
+[107:05] Yeah, to so much talk about, folks are great.
+[107:09] We do ship with hooks.
+[107:12] Hooks are a way of doing deterministic verification in particular or inserting context of,
+[107:17] you know, we fire these hooks in the events and you can register them into a, in the
+[107:22] agency, there's like a guide on how to do that.
+[107:25] Examples of things you might use hooks for is like, for example, yeah, you can run into verify the, like, a spreadsheet each time.
+[107:33] You can also look, let's say I'm working with an agent and the agent is doing some spreadsheet operations.
+[107:39] And the user has also changed this spreadsheet.
+[107:41] This is an interesting place to use the hook because you can be like, hey,
+[107:45] it has after every tool called insert changes of the user is made and you're,
+[107:51] you're doing kind of live context changes in an interesting way.
+[107:55] So, yeah, I think, uh,
+[108:00] Yeah, there are more stuff on the docs about bugs.
+[108:04] I am happy to talk about it afterwards.
+[108:07] Yeah, more questions.
+[108:09] So when the problem, the next one, I think, was.
+[108:12] Yeah.
+[108:13] Yeah.
+[108:14] Yeah.
+[108:15] Yeah.
+[108:16] Yeah.
+[108:17] Yeah.
+[108:18] Yeah.
+[108:19] Yeah.
+[108:20] Yeah.
+[108:21] Yeah.
+[108:22] Yeah.
+[108:24] Yeah.
+[108:25] Yeah.
+[108:26] OK.
+[108:27] Yeah.
+[108:28] Yeah.
+[108:29] Yeah.
+[108:30] Yeah.
+[108:31] Yeah.
+[108:32] Yeah.
+[108:33] Yeah.
+[108:34] Yeah.
+[108:35] Yeah.
+[108:36] Yeah.
+[108:37] Sure.
+[108:38] Yeah.
+[108:39] Yeah.
+[108:40] So like, let's say you've done this prototyping.
+[108:41] You've drawn something that works.
+[108:42] What I would do is, like, I've got some words that cloud.nd.
+[108:44] Like, obviously, like, when I tried doing this one time, like, doing you might
+[108:49] get directly in a road job script, I should have been more specific in my cloud.nd to be like,
+[108:53] OK, you should use this.
+[108:56] Yeah.
+[108:57] I think like, that's one thing.
+[108:59] The second thing is, yeah, just someone who's not going to be half the helper scripts
+[109:06] that you need and then might write something like this agent.
+[109:10] Yes.
+[109:11] So to rob the agent.
+[109:13] Yeah.
+[109:14] More questions down in the grid.
+[109:15] All right.
+[109:16] Yeah.
+[109:17] I put a recording on it and it's like, you think the output is scripting.
+[109:21] So it tries to find, like, my best idea.
+[109:24] Very good.
+[109:25] So I put a church in and try to find.
+[109:27] And then it's like, all your different tables.
+[109:29] And just kind of, you know, share me the advice for that kind of problem.
+[109:32] Yeah.
+[109:33] So this is a good question.
+[109:34] And you know, like, I think there is some messing that's right.
+[109:37] Like, I think one of the things, even agent knows an answer.
+[109:41] And you want to, like, sort of, like, fight it kind of to be like,
+[109:45] OK, like, no generation nine now.
+[109:47] And like, we have sort of staff of change.
+[109:49] And there's like, like, this new, like,
+[109:51] like, like, um, this is hard.
+[109:54] I actually think, uh, one of the ways of doing that is hooks.
+[109:57] So you can say, for example, like, hey.
+[110:00] Don't, if you've returned a response without writing a script, you can check that.
+[110:07] You can be like, do feedback to be like, please make sure you write a script.
+[110:10] Please make sure you read this data, and your new source to give that feedback in in the same way
+[110:15] that you call code.
+[110:16] We have these rules like make sure you read a file before you write to it.
+[110:20] So, at some determinism, it can definitely be like, as I said, it's an art sometimes.
+[110:26] Maybe like writing course, I guess.
+[110:29] Oh, yeah.
+[110:31] And the great.
+[110:32] How are you guys doing the blackboard code base?
+[110:35] It's a working like a bit humiliating plus a blackboard base.
+[110:38] Yeah.
+[110:39] Graph tool doesn't work really.
+[110:40] So I'm having to build my own like some man's day index day.
+[110:44] I just think it's kind of helpful to that.
+[110:46] Sure.
+[110:47] It's a kind of like adding a product when you think about how that can team more data into the product.
+[110:52] You know, in a couple of months of the thing, I'm already just going to go away.
+[110:55] And generally, yes, yeah.
+[111:00] I think that, I think that,
+[111:04] Subantic search, this is a quadcode plus, more than any,
+[111:10] I think that's a great question about happy to answer it.
+[111:12] Like, we, you know, they're trained out of some,
+[111:15] some antics search is more brittle.
+[111:17] I think you have to like index and search.
+[111:20] And it's not necessarily the model is not trained on semantic search.
+[111:24] And so I think that's sort of like a problem.
+[111:26] Like, you know, grab it's trained on because it's like,
+[111:28] it's easy to do that, but like, semantics search.
+[111:30] You're implementing your bespoke query.
+[111:33] For like very large code bases, you know,
+[111:36] we have lots of customers in work in large code bases.
+[111:38] I think what I see this sort of like,
+[111:41] they just do like good content and these.
+[111:44] You start in, you know, trying,
+[111:46] make sure you start at the directory you want.
+[111:48] Have like good like verification steps and hoax and links and things like that.
+[111:53] And so, you know, that's what we do.
+[111:55] We don't have, you know, our custom.
+[111:57] We dog through the corn code, right? So, yeah.
+[112:00] Okay, yeah, let's go, Jen.
+[112:02] We have to close the important action.
+[112:04] We'll take it up for Toree here, everyone.
