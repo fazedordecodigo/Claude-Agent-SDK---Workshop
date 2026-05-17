@@ -1,6 +1,8 @@
 # Claude Agent SDK: artigo organizado do workshop
 
-Este indice organiza a transcricao do workshop em capitulos navegaveis. A base principal e `docs/transcription.txt`; notas marcadas como oficiais complementam o texto com a documentacao atual do Claude Agent SDK.
+English default: [../en/indice-claude-agent-sdk.md](../en/indice-claude-agent-sdk.md)
+
+Este indice organiza a transcricao do workshop em capitulos navegaveis. A base principal e `../transcription.txt`; notas marcadas como oficiais complementam o texto com a documentacao atual do Claude Agent SDK.
 
 ## Capitulos
 
