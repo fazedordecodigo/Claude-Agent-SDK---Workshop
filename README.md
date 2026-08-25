@@ -1,3 +1,5 @@
+
+
 # Claude Agent SDK — Workshop
 
 English is the default language for this repository.
@@ -6,7 +8,7 @@ Portuguese version: [docs/pt-BR/README.md](docs/pt-BR/README.md)
 
 Study project about the Claude Agent SDK workshop presented at AI Engineer Code Summit, organized from the original transcript in `docs/transcription.txt`.
 
-Anthropic published a complete 2-hour course on building Claude agents, presented by an engineer who builds Claude Code. This material reshapes that content into a didactic article, split into navigable chapters, with practical examples, deeper explanations, and complementary references.
+Anthropic published a complete 2-hour course on building Claude agents, presented by an engineer who builds Claude Code. This material reshapes that content into a didactic article, split into navigable chapters, with practical examples, deeper explanations, and complementary references. Each chapter includes a time range from the original transcript.
 
 ## Main Index
 
